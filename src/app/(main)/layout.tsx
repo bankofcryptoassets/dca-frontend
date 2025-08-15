@@ -15,7 +15,7 @@ export default function MainLayout({
 
   return (
     <>
-      <div className="bg-background/10 flex items-center justify-between px-5 py-8 backdrop-blur-3xl">
+      <div className="bg-background/10 sticky top-0 z-10 flex items-center justify-between px-5 py-6 backdrop-blur-3xl">
         <Image src="/logo.svg" alt="Logo" width={75} height={17} />
 
         <Button
@@ -28,9 +28,9 @@ export default function MainLayout({
         </Button>
       </div>
 
-      <div className="w-full px-5 pt-7 pb-30">{children}</div>
+      <div className="w-full px-5 pt-7 pb-28">{children}</div>
 
-      <div className="bg-foreground/10 absolute right-5 bottom-5 left-5 flex h-17.5 items-center justify-evenly rounded-full backdrop-blur-2xl">
+      <div className="bg-foreground/10 fixed right-5 bottom-5 left-5 z-10 flex h-17.5 items-center justify-evenly rounded-full backdrop-blur-2xl">
         {MENU_ITEMS.map((item) => (
           <Link
             key={item.href}
