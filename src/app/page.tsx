@@ -11,6 +11,7 @@ export default function Home() {
         alt="Main Background"
         className="absolute inset-0 z-0 h-full w-full object-cover"
         fill
+        priority
       />
 
       <main className="bg-background relative z-1 row-start-2 flex w-full flex-col items-center gap-15 px-10 pt-10 pb-15">
@@ -19,10 +20,13 @@ export default function Home() {
           alt="Main Background Arch"
           width={400}
           height={75}
+          priority
           className="absolute top-0 right-0 left-0 h-full max-h-18 w-full -translate-y-full"
         />
 
-        <InlineSVG src="/logo.svg" className="h-7 w-auto" />
+        <div className="h-7">
+          <InlineSVG src="/logo.svg" className="h-7 w-auto" />
+        </div>
 
         <p className="text-center text-lg">
           Stack Bitcoin Every Day
@@ -30,7 +34,12 @@ export default function Home() {
           Add Value to Your Name
         </p>
 
-        <Button color="primary" variant="shadow" fullWidth>
+        <Button
+          color="primary"
+          variant="shadow"
+          fullWidth
+          className="border-2 border-[#F6921A] bg-gradient-to-r from-[#F7931A] to-[#C46200] font-medium"
+        >
           Plan Your Bitcoin Treasury
         </Button>
       </main>

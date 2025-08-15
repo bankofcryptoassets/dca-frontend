@@ -9,7 +9,10 @@ export const InitializeMiniKit = ({
   const { setFrameReady, isFrameReady } = useMiniKit()
 
   useEffect(() => {
-    if (!isFrameReady) setFrameReady({ disableNativeGestures: true })
+    if (!isFrameReady)
+      setFrameReady({ disableNativeGestures: true }).then(() => {
+        console.log('App Initialized!')
+      })
   }, [setFrameReady, isFrameReady])
 
   return <>{children}</>
