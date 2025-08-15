@@ -1,4 +1,4 @@
-# Bitmor DCA MiniApp
+# Bitmor DCA Base App
 
 ## Getting Started
 
