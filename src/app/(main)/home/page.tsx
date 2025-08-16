@@ -180,14 +180,6 @@ export default function HomePage() {
             </Button>
           </div>
         </div>
-
-        {/* <Image
-          src="/extras/bg-dots.png"
-          alt="BG Dots"
-          className="absolute -top-2 -right-4 -bottom-2 -left-4 z-0 h-full w-full mix-blend-overlay"
-          width={382}
-          height={137}
-        /> */}
       </GradientBorderCard>
 
       <Divider className="my-4 bg-[radial-gradient(50%_23209.76%_at_50%_50%,_#FFFFFF_0%,_rgba(255,_255,_255,_0)_100%)] opacity-20" />
