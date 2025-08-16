@@ -8,6 +8,19 @@ export async function POST(request: Request) {
   }
 
   try {
+    const { data: existingUser } = await supabase
+      .from('waitlist')
+      .select('fid')
+      .eq('fid', fid)
+      .single()
+
+    if (existingUser) {
+      return Response.json(
+        { error: 'You are already on the waitlist!' },
+        { status: 409 }
+      )
+    }
+
     const { data, error } = await supabase
       .from('waitlist')
       .insert([{ fid: fid }])

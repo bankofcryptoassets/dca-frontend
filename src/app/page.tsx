@@ -1,12 +1,13 @@
 'use client'
-import { useMiniKit } from '@coinbase/onchainkit/minikit'
 import { Button } from '@heroui/react'
 import Image from 'next/image'
-// import { useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import InlineSVG from 'react-inlinesvg'
+import { useMiniKit } from '@coinbase/onchainkit/minikit'
+import { sdk } from '@farcaster/miniapp-sdk'
 
 export default function Home() {
-  // const router = useRouter()
+  const router = useRouter()
   const { context } = useMiniKit()
   console.log('context', context?.user.fid)
 
@@ -24,12 +25,23 @@ export default function Home() {
       })
 
       if (!waitlistRes.ok) {
+        if (waitlistRes.status === 409) {
+          console.log('User already on waitlist')
+          router.push('/home')
+          return
+        }
         throw new Error('Failed to join waitlist')
       }
 
-      // Create Farcaster cast
-      // const text =
-      //   'Just joined the DCA waitlist! Stack sats automatically with @dca #Bitcoin'
+      const text =
+        'I joined the waitlist and locked in my spot for Bitmor private token round. Secure your seat on the table to be early.'
+
+      await sdk.actions.composeCast({
+        text,
+        embeds: ['https://farcaster.xyz/miniapps/HVDZUx8hVTgA/bitmor'],
+      })
+
+      router.push('/home')
     } catch (error) {
       console.error('Error:', error)
     }
