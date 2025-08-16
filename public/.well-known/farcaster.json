@@ -1,0 +1,31 @@
+{
+  "frame": {
+    "name": "Bitmor",
+    "version": "1",
+    "iconUrl": "https://dca.bitmor.xyz/mini-app/icon.png",
+    "homeUrl": "https://dca.bitmor.xyz",
+    "imageUrl": "https://dca.bitmor.xyz/mini-app/hero.png",
+    "buttonTitle": "Launch Bitmor",
+    "splashImageUrl": "https://dca.bitmor.xyz/mini-app/splash.png",
+    "splashBackgroundColor": "#000000",
+    "webhookUrl": "https://dca.bitmor.xyz/api/webhook",
+    "subtitle": "Buying Bitcoin for you Everyday",
+    "description": "Bitmor is your Personal Bitcoin Treasury, growing your personal store of value as an investor and adding real value to your creator coins with Bitcoin.",
+    "primaryCategory": "finance",
+    "screenshotUrls": [
+      "https://dca.bitmor.xyz/mini-app/screenshot-1.png",
+      "https://dca.bitmor.xyz/mini-app/screenshot-2.png"
+    ],
+    "heroImageUrl": "https://dca.bitmor.xyz/mini-app/hero.png",
+    "ogImageUrl": "https://dca.bitmor.xyz/mini-app/hero.png",
+    "tags": ["bitcoin", "dca", "stack-satoshis", "treasury", "everyday"],
+    "tagline": "Build Your Bitcoin Treasury",
+    "ogTitle": "Bitmor DCA",
+    "ogDescription": "Grow your wealth. Strengthen your creator coins. With Bitcoin."
+  },
+  "accountAssociation": {
+    "header": "eyJmaWQiOjExOTk4OTIsInR5cGUiOiJhdXRoIiwia2V5IjoiMHg0M2ZkMjNGYzkxNzM3OENlMkZkMDNGQkE2MDVBMUI1ZjQ0NTExZjU2In0",
+    "payload": "eyJkb21haW4iOiJkY2EuYml0bW9yLnh5eiJ9",
+    "signature": "8338XGgGK8Esp0KJeZbDMwkIa978ZBkm6ISp9lYojh1r1fob0S0SVd0qK9+oxPPLREU/y6Om1AXWpMdifxc0Fhs="
+  }
+}
