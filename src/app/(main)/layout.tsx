@@ -6,6 +6,8 @@ import { usePathname } from 'next/navigation'
 import { HiBolt } from 'react-icons/hi2'
 import InlineSVG from 'react-inlinesvg'
 
+const hideStrikeButton = ['/create']
+
 export default function MainLayout({
   children,
 }: {
@@ -13,19 +15,23 @@ export default function MainLayout({
 }) {
   const pathname = usePathname()
 
+  const isHideStrikeButton = hideStrikeButton.includes(pathname)
+
   return (
     <>
-      <div className="bg-background/10 sticky top-0 z-10 flex items-center justify-between px-5 py-6 backdrop-blur-3xl">
+      <div className="bg-background/10 sticky top-0 z-10 flex min-h-22 items-center justify-between px-5 py-6 backdrop-blur-3xl">
         <Image src="/logo.svg" alt="Logo" width={88} height={20} />
 
-        <Button
-          color="primary"
-          variant="shadow"
-          className="bg-gradient-to-r from-[#F7931A] to-[#C46200] font-medium"
-          startContent={<HiBolt />}
-        >
-          23 Days
-        </Button>
+        {!isHideStrikeButton && (
+          <Button
+            color="primary"
+            variant="shadow"
+            className="bg-gradient-to-r from-[#F7931A] to-[#C46200] font-medium"
+            startContent={<HiBolt />}
+          >
+            23 Days
+          </Button>
+        )}
       </div>
 
       <div className="w-full px-5 pt-7 pb-28">{children}</div>
