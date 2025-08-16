@@ -36,7 +36,8 @@ export const metadata: Metadata = {
       version: 'next',
       imageUrl: 'https://dca.bitmor.xyz/mini-app/hero.png',
       button: {
-        title: 'Launch Bitmor',
+        // title: 'Launch Bitmor',
+        title: 'Join the Waitlist',
         action: {
           type: 'launch_frame',
           name: 'Bitmor',
@@ -50,7 +51,8 @@ export const metadata: Metadata = {
       version: 'next',
       imageUrl: 'https://dca.bitmor.xyz/mini-app/hero.png',
       button: {
-        title: 'Launch Bitmor',
+        // title: 'Launch Bitmor',
+        title: 'Join the Waitlist',
         action: {
           type: 'launch_frame',
           name: 'Bitmor',

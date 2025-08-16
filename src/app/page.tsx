@@ -9,7 +9,6 @@ import { sdk } from '@farcaster/miniapp-sdk'
 export default function Home() {
   const router = useRouter()
   const { context } = useMiniKit()
-  console.log('context', context?.user.fid)
 
   const handleSubmit = async () => {
     if (!context?.user?.fid) {
@@ -26,18 +25,14 @@ export default function Home() {
 
       if (!waitlistRes.ok) {
         if (waitlistRes.status === 409) {
-          console.log('User already on waitlist')
           router.push('/home')
           return
         }
         throw new Error('Failed to join waitlist')
       }
 
-      const text =
-        'I joined the waitlist and locked in my spot for Bitmor private token round. Secure your seat on the table to be early.'
-
       await sdk.actions.composeCast({
-        text,
+        text: 'I joined the waitlist and locked in my spot for Bitmor private token round. Secure your seat on the table to be early.',
         embeds: ['https://farcaster.xyz/miniapps/HVDZUx8hVTgA/bitmor'],
       })
 

@@ -1,5 +1,6 @@
 import { useMiniKit } from '@coinbase/onchainkit/minikit'
 import { useEffect } from 'react'
+import { sdk } from '@farcaster/miniapp-sdk'
 
 export const InitializeMiniKit = ({
   children,
@@ -10,8 +11,9 @@ export const InitializeMiniKit = ({
 
   useEffect(() => {
     if (!isFrameReady)
-      setFrameReady({ disableNativeGestures: true }).then(() => {
+      setFrameReady({ disableNativeGestures: true }).then(async () => {
         console.log('App Initialized!')
+        await sdk.actions.addMiniApp()
       })
   }, [setFrameReady, isFrameReady])
 
