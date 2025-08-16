@@ -18,10 +18,8 @@ export const Providers = ({ children }: { children: ReactNode }) => {
       chain={baseSepolia}
       config={{
         appearance: {
-          mode: 'auto',
-          theme: 'mini-app-theme',
-          name: 'Bitmor DCA',
-          logo: 'https://dca.bitmor.xyz/base-app/logo.png',
+          name: 'Bitmor',
+          logo: 'https://dca.bitmor.xyz/mini-app/logo.png',
         },
       }}
     >
