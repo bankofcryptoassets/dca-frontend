@@ -1,13 +1,22 @@
 'use client'
 import { CardTitle } from '@/components/CardTitle'
 import GradientBorderCard from '@/components/GradientBorderCard'
-import { Button, Chip, Divider, Progress } from '@heroui/react'
+import { Button, Chip, Divider, NumberInput, Progress } from '@heroui/react'
 import InlineSVG from 'react-inlinesvg'
 import { FaShareNodes } from 'react-icons/fa6'
+import {
+  Drawer,
+  DrawerContent,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from '@/components/Drawer'
 
 export default function HomePage() {
   return (
     <div className="space-y-3">
+      {/* GOAL PROGRESS */}
       <GradientBorderCard className="pb-6">
         <div className="flex flex-col gap-4">
           <div className="flex items-center justify-between gap-2">
@@ -16,13 +25,69 @@ export default function HomePage() {
               icon={<InlineSVG src="/icons/golf-hole.svg" className="size-4" />}
             />
 
-            <Button
-              color="primary"
-              variant="bordered"
-              className="border-primary/20 h-9 rounded-full font-medium"
-            >
-              Edit Amount
-            </Button>
+            <Drawer>
+              <DrawerTrigger asChild>
+                <Button
+                  color="primary"
+                  variant="bordered"
+                  className="border-primary/20 h-9 rounded-full font-medium"
+                >
+                  Edit Amount
+                </Button>
+              </DrawerTrigger>
+
+              <DrawerContent>
+                <DrawerHeader className="px-5 pt-6 pb-0">
+                  <DrawerTitle className="text-xl">Edit Amount</DrawerTitle>
+                  <div className="flex flex-col items-center">
+                    <div className="my-8 w-[200px] text-center">
+                      <NumberInput
+                        variant="underlined"
+                        className="h-20 bg-[linear-gradient(180deg,_rgba(255,_255,_255,_0)_0%,_rgba(255,_255,_255,_0.1)_100%)]"
+                        classNames={{
+                          input: 'h-20 text-center text-[40px]',
+                          inputWrapper: 'h-20 border-foreground/20 border-b-2',
+                          mainWrapper: 'h-20',
+                        }}
+                        defaultValue={50}
+                        placeholder="$50.00"
+                        formatOptions={{
+                          style: 'currency',
+                          currency: 'USD',
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        }}
+                      />
+                    </div>
+
+                    <Chip
+                      color="primary"
+                      variant="flat"
+                      className="text-primary text-sm"
+                    >
+                      ~0.0014 BTC at current price
+                    </Chip>
+
+                    <div className="text-foreground/50 mt-4 text-center text-sm">
+                      Amount can only be increased. <br />
+                      Commit responsibly
+                    </div>
+                  </div>
+
+                  <Divider className="my-8 bg-[radial-gradient(50%_23209.76%_at_50%_50%,_#FFFFFF_0%,_rgba(255,_255,_255,_0)_100%)] opacity-20" />
+                </DrawerHeader>
+
+                <DrawerFooter className="px-5 pt-0 pb-10">
+                  <Button
+                    color="primary"
+                    size="lg"
+                    className="border-2 border-[#F6921A] bg-gradient-to-r from-[#F7931A] to-[#C46200] font-medium"
+                  >
+                    Save
+                  </Button>
+                </DrawerFooter>
+              </DrawerContent>
+            </Drawer>
           </div>
 
           <div className="flex flex-col gap-2">
@@ -72,6 +137,7 @@ export default function HomePage() {
         </div>
       </GradientBorderCard>
 
+      {/* NEXT BTC PURCHASE */}
       <GradientBorderCard className="pb-10">
         <div className="flex flex-col gap-4">
           <div className="flex items-center justify-between gap-2">
@@ -80,13 +146,70 @@ export default function HomePage() {
               icon={<InlineSVG src="/icons/calendar.svg" className="size-4" />}
             />
 
-            <Button
-              color="primary"
-              variant="bordered"
-              className="border-primary/20 h-9 rounded-full font-medium"
-            >
-              Prepay
-            </Button>
+            <Drawer>
+              <DrawerTrigger asChild>
+                <Button
+                  color="primary"
+                  variant="bordered"
+                  className="border-primary/20 h-9 rounded-full font-medium"
+                >
+                  Prepay
+                </Button>
+              </DrawerTrigger>
+
+              <DrawerContent>
+                <DrawerHeader className="px-5 pt-6 pb-0">
+                  <DrawerTitle className="text-xl">Prepay</DrawerTitle>
+                  <div className="flex flex-col items-center">
+                    <div className="my-8 w-[200px] text-center">
+                      <NumberInput
+                        variant="underlined"
+                        className="h-20 bg-[linear-gradient(180deg,_rgba(255,_255,_255,_0)_0%,_rgba(255,_255,_255,_0.1)_100%)]"
+                        classNames={{
+                          input: 'h-20 text-center text-[40px]',
+                          inputWrapper: 'h-20 border-foreground/20 border-b-2',
+                          mainWrapper: 'h-20',
+                        }}
+                        defaultValue={50}
+                        placeholder="$50.00"
+                        formatOptions={{
+                          style: 'currency',
+                          currency: 'USD',
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        }}
+                      />
+                    </div>
+
+                    <Chip
+                      color="primary"
+                      variant="flat"
+                      className="text-primary text-sm"
+                    >
+                      ~0.0014 BTC at current price
+                    </Chip>
+
+                    <div className="text-foreground/50 mt-4 text-center text-sm">
+                      This covers 3 days of
+                      <br />
+                      Scheduled Payment
+                    </div>
+                  </div>
+
+                  <Divider className="my-8 bg-[radial-gradient(50%_23209.76%_at_50%_50%,_#FFFFFF_0%,_rgba(255,_255,_255,_0)_100%)] opacity-20" />
+                </DrawerHeader>
+
+                <DrawerFooter className="px-5 pt-0 pb-10">
+                  <Button
+                    color="primary"
+                    size="lg"
+                    className="border-2 border-[#F6921A] bg-gradient-to-r from-[#F7931A] to-[#C46200] font-medium"
+                  >
+                    Save
+                  </Button>
+                </DrawerFooter>
+              </DrawerContent>
+            </Drawer>
           </div>
 
           <div className="flex flex-col gap-3.5 text-sm">
@@ -115,6 +238,7 @@ export default function HomePage() {
         </div>
       </GradientBorderCard>
 
+      {/* REWARDS EARNED */}
       <GradientBorderCard>
         <div className="flex flex-col gap-4">
           <div className="flex items-center justify-between gap-2">
@@ -165,6 +289,7 @@ export default function HomePage() {
 
       <Divider className="my-4 bg-[radial-gradient(50%_23209.76%_at_50%_50%,_#FFFFFF_0%,_rgba(255,_255,_255,_0)_100%)] opacity-20" />
 
+      {/* DUST SWAP */}
       <GradientBorderCard bgGradient bgDots>
         <div className="relative z-1 flex flex-col gap-2">
           <div className="flex items-center justify-between gap-2">
@@ -193,6 +318,7 @@ export default function HomePage() {
 
       <Divider className="my-4 bg-[radial-gradient(50%_23209.76%_at_50%_50%,_#FFFFFF_0%,_rgba(255,_255,_255,_0)_100%)] opacity-20" />
 
+      {/* RISK MANAGEMENT */}
       <GradientBorderCard wrapperClassName="bg-[linear-gradient(180deg,_#FF4038_0%,_rgba(255,_64,_56,_0.1)_100%)]">
         <div className="flex flex-col gap-4">
           <div className="flex items-center justify-between gap-2">
