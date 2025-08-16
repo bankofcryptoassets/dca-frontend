@@ -28,10 +28,10 @@ export default function Home() {
         />
 
         <div className="h-7">
-          <InlineSVG src="/logo.svg" className="h-7 w-auto" />
+          <InlineSVG src="/logo.svg" className="h-8 w-auto" />
         </div>
 
-        <p className="text-center text-lg">
+        <p className="text-center text-xl">
           Stack Bitcoin Every Day
           <br />
           Add Value to Your Name
@@ -41,6 +41,7 @@ export default function Home() {
           color="primary"
           variant="shadow"
           fullWidth
+          size="lg"
           className="border-2 border-[#F6921A] bg-gradient-to-r from-[#F7931A] to-[#C46200] font-medium"
           onPress={() => {
             router.push('/home')

@@ -1,14 +1,19 @@
 'use client'
 import { cn } from '@heroui/react'
+import Image from 'next/image'
 
 export default function GradientBorderCard({
   children,
   className,
   wrapperClassName,
+  bgDots = false,
+  bgGradient = false,
 }: {
   children: React.ReactNode
   className?: string
   wrapperClassName?: string
+  bgDots?: boolean
+  bgGradient?: boolean
 }) {
   return (
     <div
@@ -17,8 +22,25 @@ export default function GradientBorderCard({
         wrapperClassName
       )}
     >
-      <div className={cn('bg-background w-full rounded-2xl p-4', className)}>
+      <div
+        className={cn(
+          'bg-background relative w-full rounded-2xl p-4',
+          bgGradient &&
+            'bg-[radial-gradient(91.8%_91.78%_at_60.24%_4.16%,_rgba(247,_147,_26,_0.7)_0%,_rgba(0,_0,_0,_0.5)_100%)]',
+          className
+        )}
+      >
         {children}
+
+        {bgDots && (
+          <Image
+            src="/extras/bg-dots.png"
+            alt="BG Dots"
+            className="absolute -top-2 -right-4 -bottom-2 -left-4 z-0 h-full w-full mix-blend-overlay"
+            width={382}
+            height={137}
+          />
+        )}
       </div>
     </div>
   )

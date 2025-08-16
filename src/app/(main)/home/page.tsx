@@ -2,7 +2,6 @@
 import { CardTitle } from '@/components/CardTitle'
 import GradientBorderCard from '@/components/GradientBorderCard'
 import { Button, Chip, Divider, Progress } from '@heroui/react'
-import Image from 'next/image'
 import InlineSVG from 'react-inlinesvg'
 
 export default function HomePage() {
@@ -13,14 +12,13 @@ export default function HomePage() {
           <div className="flex items-center justify-between gap-2">
             <CardTitle
               title="GOAL PROGRESS"
-              icon={<InlineSVG src="/icons/golf-hole.svg" className="size-3" />}
+              icon={<InlineSVG src="/icons/golf-hole.svg" className="size-4" />}
             />
 
             <Button
               color="primary"
               variant="bordered"
-              size="sm"
-              className="border-primary/20 h-7 rounded-full text-xs font-medium"
+              className="border-primary/20 h-9 rounded-full font-medium"
             >
               Edit Amount
             </Button>
@@ -29,7 +27,7 @@ export default function HomePage() {
           <div className="flex flex-col gap-2">
             <div>
               <span className="text-[28px] font-bold">32 </span>
-              <span className="text-foreground/50 text-[10px]">/0.5 BTC</span>
+              <span className="text-foreground/50 text-sm">/0.5 BTC</span>
             </div>
 
             <Progress
@@ -44,17 +42,16 @@ export default function HomePage() {
 
           <div className="flex items-center justify-between gap-2">
             <div>
-              <div className="text-foreground/50 mb-0.5 text-[10px]">
+              <div className="text-foreground/50 mb-0.5 text-sm">
                 Est. Days Remaining
               </div>
-              <div className="text-xs">58 Days</div>
+              <div>58 Days</div>
             </div>
 
             <Chip
               color="default"
               variant="faded"
-              size="sm"
-              className="text-foreground/70 text-[10px]"
+              className="text-foreground/70 text-xs"
             >
               56% Completed
             </Chip>
@@ -67,20 +64,19 @@ export default function HomePage() {
           <div className="flex items-center justify-between gap-2">
             <CardTitle
               title="NEXT BTC PURCHASE"
-              icon={<InlineSVG src="/icons/calendar.svg" className="size-3" />}
+              icon={<InlineSVG src="/icons/calendar.svg" className="size-4" />}
             />
 
             <Button
               color="primary"
               variant="bordered"
-              size="sm"
-              className="border-primary/20 h-7 rounded-full text-xs font-medium"
+              className="border-primary/20 h-9 rounded-full font-medium"
             >
               Prepay
             </Button>
           </div>
 
-          <div className="flex flex-col gap-3.5 text-xs">
+          <div className="flex flex-col gap-3.5 text-sm">
             <div className="flex flex-col gap-1">
               <div className="flex items-center justify-between">
                 <div>23rd Oct, 2025</div>
@@ -111,18 +107,16 @@ export default function HomePage() {
           <div className="flex items-center justify-between gap-2">
             <CardTitle
               title="REWARDS EARNED"
-              icon={<InlineSVG src="/icons/gift.svg" className="size-3" />}
+              icon={<InlineSVG src="/icons/gift.svg" className="size-4" />}
             />
 
             <Button
               color="primary"
-              // variant="bordered"
-              size="sm"
-              className="text-primary h-7 rounded-full bg-transparent bg-[linear-gradient(90deg,_rgba(247,_147,_26,_0)_0%,_rgba(247,_147,_26,_0.5)_100%)] text-xs font-medium"
+              className="text-primary h-9 rounded-full bg-transparent bg-[linear-gradient(90deg,_rgba(247,_147,_26,_0)_0%,_rgba(247,_147,_26,_0.5)_100%)] font-medium"
               startContent={
                 <InlineSVG
                   src="/icons/bolt.svg"
-                  className="text-primary size-3"
+                  className="text-primary size-4"
                 />
               }
             >
@@ -130,7 +124,7 @@ export default function HomePage() {
             </Button>
           </div>
 
-          <div className="flex flex-col gap-1 text-xs">
+          <div className="flex flex-col gap-1 text-sm">
             <div className="flex items-center justify-between">
               <div className="text-foreground/50">Next Milestone</div>
               <div className="text-foreground/50">Days Remaining</div>
@@ -158,18 +152,22 @@ export default function HomePage() {
 
       <Divider className="my-4 bg-[radial-gradient(50%_23209.76%_at_50%_50%,_#FFFFFF_0%,_rgba(255,_255,_255,_0)_100%)] opacity-20" />
 
-      <GradientBorderCard className="relative overflow-hidden bg-[radial-gradient(91.8%_91.78%_at_60.24%_4.16%,_rgba(247,_147,_26,_0.7)_0%,_rgba(0,_0,_0,_0.5)_100%)] p-4">
+      <GradientBorderCard
+        className="relative overflow-hidden p-4"
+        bgGradient
+        bgDots
+      >
         <div className="relative z-1 flex flex-col gap-2">
           <div className="flex items-center justify-between gap-2">
             <CardTitle
               title="DUST SWAP"
-              icon={<InlineSVG src="/icons/coin-swap.svg" className="size-3" />}
+              icon={<InlineSVG src="/icons/coin-swap.svg" className="size-4" />}
             />
           </div>
 
           <div>
             <span className="text-[28px]">$0.53 </span>
-            <span className="text-foreground/50 text-xs"> ~ 3 Less Days</span>
+            <span className="text-foreground/50 text-sm"> ~ 3 Less Days</span>
           </div>
 
           <div className="absolute top-1/2 right-0 -translate-y-1/2">
@@ -183,13 +181,13 @@ export default function HomePage() {
           </div>
         </div>
 
-        <Image
+        {/* <Image
           src="/extras/bg-dots.png"
           alt="BG Dots"
           className="absolute -top-2 -right-4 -bottom-2 -left-4 z-0 h-full w-full mix-blend-overlay"
           width={382}
           height={137}
-        />
+        /> */}
       </GradientBorderCard>
 
       <Divider className="my-4 bg-[radial-gradient(50%_23209.76%_at_50%_50%,_#FFFFFF_0%,_rgba(255,_255,_255,_0)_100%)] opacity-20" />
@@ -205,24 +203,24 @@ export default function HomePage() {
               icon={
                 <InlineSVG
                   src="/icons/caution.svg"
-                  className="size-3 text-[#FF4038]"
+                  className="size-4 text-[#FF4038]"
                 />
               }
               iconClassName="bg-[linear-gradient(102.3deg,_rgba(255,_255,_255,_0.1)_3.94%,_rgba(255,_255,_255,_0.07)_100%)]"
             />
           </div>
 
-          <div className="flex items-center justify-between gap-2 text-xs">
+          <div className="flex items-center justify-between gap-2 text-sm">
             <div className="text-foreground/50">Withdrawal Delay:</div>
             <div>30 Days</div>
           </div>
 
-          <div className="flex items-center justify-between gap-2 text-xs">
+          <div className="flex items-center justify-between gap-2 text-sm">
             <div className="text-foreground/50">Current penalty:</div>
             <div>0.095 BTC</div>
           </div>
 
-          <div className="flex items-center justify-between gap-2 text-xs">
+          <div className="flex items-center justify-between gap-2 text-sm">
             <div className="text-foreground/50">Early Withdrawal Amount</div>
             <div>0.495 BTC</div>
           </div>
@@ -230,13 +228,12 @@ export default function HomePage() {
           <Button
             color="danger"
             variant="bordered"
-            size="sm"
             className="mt-4 border-[#FF4038]/10 bg-[#FF4038]/10 font-medium"
           >
             Do Early Withdraw
           </Button>
 
-          <p className="text-center text-xs font-medium">
+          <p className="text-center text-sm font-medium">
             Withdraw after 30 Days (No Penalty)
           </p>
         </div>
