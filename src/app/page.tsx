@@ -32,7 +32,7 @@ export default function Home() {
       }
 
       await sdk.actions.composeCast({
-        text: 'I joined the waitlist and locked in my spot for Bitmor private token round. Secure your seat on the table to be early.',
+        text: "I'll be stacking Bitcoin daily with Bitmor. I've joined the waitlist and locked my chance at the Private Token Round. Only 500 seats, be early.",
         embeds: ['https://farcaster.xyz/miniapps/HVDZUx8hVTgA/bitmor'],
       })
 
