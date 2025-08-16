@@ -2,7 +2,7 @@
 import { Button, cn } from '@heroui/react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { HiBolt } from 'react-icons/hi2'
 import InlineSVG from 'react-inlinesvg'
 
@@ -14,7 +14,7 @@ export default function MainLayout({
   children: React.ReactNode
 }) {
   const pathname = usePathname()
-
+  const router = useRouter()
   const isHideStrikeButton = hideStrikeButton.includes(pathname)
 
   return (
@@ -28,6 +28,9 @@ export default function MainLayout({
             variant="shadow"
             className="bg-gradient-to-r from-[#F7931A] to-[#C46200] font-medium"
             startContent={<HiBolt />}
+            onPress={() => {
+              router.push('/create')
+            }}
           >
             23 Days
           </Button>
