@@ -7,7 +7,7 @@ import InlineSVG from 'react-inlinesvg'
 export default function HomePage() {
   return (
     <div className="space-y-3">
-      <GradientBorderCard className="p-4 pb-6">
+      <GradientBorderCard className="pb-6">
         <div className="flex flex-col gap-4">
           <div className="flex items-center justify-between gap-2">
             <CardTitle
@@ -59,7 +59,7 @@ export default function HomePage() {
         </div>
       </GradientBorderCard>
 
-      <GradientBorderCard className="p-4 pb-10">
+      <GradientBorderCard className="pb-10">
         <div className="flex flex-col gap-4">
           <div className="flex items-center justify-between gap-2">
             <CardTitle
@@ -102,7 +102,7 @@ export default function HomePage() {
         </div>
       </GradientBorderCard>
 
-      <GradientBorderCard className="p-4">
+      <GradientBorderCard>
         <div className="flex flex-col gap-4">
           <div className="flex items-center justify-between gap-2">
             <CardTitle
@@ -152,12 +152,8 @@ export default function HomePage() {
 
       <Divider className="my-4 bg-[radial-gradient(50%_23209.76%_at_50%_50%,_#FFFFFF_0%,_rgba(255,_255,_255,_0)_100%)] opacity-20" />
 
-      <GradientBorderCard
-        className="relative overflow-hidden p-4"
-        bgGradient
-        bgDots
-      >
-        <div className="relative z-1 flex flex-col gap-2">
+      <GradientBorderCard bgGradient bgDots>
+        <div className="z-1 flex flex-col gap-2">
           <div className="flex items-center justify-between gap-2">
             <CardTitle
               title="DUST SWAP"
@@ -184,10 +180,7 @@ export default function HomePage() {
 
       <Divider className="my-4 bg-[radial-gradient(50%_23209.76%_at_50%_50%,_#FFFFFF_0%,_rgba(255,_255,_255,_0)_100%)] opacity-20" />
 
-      <GradientBorderCard
-        className="p-4"
-        wrapperClassName="bg-[linear-gradient(180deg,_#FF4038_0%,_rgba(255,_64,_56,_0.1)_100%)]"
-      >
+      <GradientBorderCard wrapperClassName="bg-[linear-gradient(180deg,_#FF4038_0%,_rgba(255,_64,_56,_0.1)_100%)]">
         <div className="flex flex-col gap-4">
           <div className="flex items-center justify-between gap-2">
             <CardTitle

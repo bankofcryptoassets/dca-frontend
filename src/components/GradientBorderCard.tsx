@@ -24,7 +24,7 @@ export default function GradientBorderCard({
     >
       <div
         className={cn(
-          'bg-background relative w-full rounded-2xl p-4',
+          'bg-background relative w-full overflow-hidden rounded-2xl p-4',
           bgGradient &&
             'bg-[radial-gradient(91.8%_91.78%_at_60.24%_4.16%,_rgba(247,_147,_26,_0.7)_0%,_rgba(0,_0,_0,_0.5)_100%)]',
           className
@@ -36,7 +36,7 @@ export default function GradientBorderCard({
           <Image
             src="/extras/bg-dots.png"
             alt="BG Dots"
-            className="absolute -top-2 -right-4 -bottom-2 -left-4 z-0 h-full w-full mix-blend-overlay"
+            className="absolute -top-2 -right-4 -bottom-2 -left-4 z-0 h-full w-full object-cover mix-blend-overlay select-none"
             width={382}
             height={137}
           />

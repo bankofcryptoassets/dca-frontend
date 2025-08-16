@@ -7,7 +7,7 @@ import InlineSVG from 'react-inlinesvg'
 export default function SettingsPage() {
   return (
     <div className="space-y-3">
-      <GradientBorderCard className="p-4 pb-8">
+      <GradientBorderCard className="pb-8">
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between gap-2">
             <CardTitle
@@ -37,14 +37,10 @@ export default function SettingsPage() {
         </div>
       </GradientBorderCard>
 
-      <Divider className="my-4 bg-[radial-gradient(50%_23209.76%_at_50%_50%,_#FFFFFF_0%,_rgba(255,_255,_255,_0)_100%)] opacity-20" />
+      <Divider className="my-5 bg-[radial-gradient(50%_23209.76%_at_50%_50%,_#FFFFFF_0%,_rgba(255,_255,_255,_0)_100%)] opacity-20" />
 
-      <GradientBorderCard
-        className="relative overflow-hidden p-4"
-        bgGradient
-        bgDots
-      >
-        <div className="relative z-1 flex flex-col gap-4">
+      <GradientBorderCard bgGradient bgDots>
+        <div className="z-1 flex flex-col gap-4">
           <div className="flex items-center justify-between gap-2">
             <CardTitle
               title="REFERRAL LINK"
@@ -70,7 +66,7 @@ export default function SettingsPage() {
         </div>
       </GradientBorderCard>
 
-      <Divider className="my-4 bg-[radial-gradient(50%_23209.76%_at_50%_50%,_#FFFFFF_0%,_rgba(255,_255,_255,_0)_100%)] opacity-20" />
+      <Divider className="my-5 bg-[radial-gradient(50%_23209.76%_at_50%_50%,_#FFFFFF_0%,_rgba(255,_255,_255,_0)_100%)] opacity-20" />
     </div>
   )
 }
