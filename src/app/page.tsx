@@ -11,11 +11,28 @@ export default function Home() {
   console.log('context', context?.user.fid)
 
   const handleSubmit = async () => {
-    const res = await fetch('/api/waitlist', {
-      method: 'POST',
-      body: JSON.stringify({ fid: context?.user.fid }),
-    })
-    console.log('Response from /api/waitlist:', res)
+    if (!context?.user?.fid) {
+      console.error('No FID found')
+      return
+    }
+
+    try {
+      const waitlistRes = await fetch('/api/waitlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fid: context.user.fid }),
+      })
+
+      if (!waitlistRes.ok) {
+        throw new Error('Failed to join waitlist')
+      }
+
+      // Create Farcaster cast
+      // const text =
+      //   'Just joined the DCA waitlist! Stack sats automatically with @dca #Bitcoin'
+    } catch (error) {
+      console.error('Error:', error)
+    }
   }
 
   return (
