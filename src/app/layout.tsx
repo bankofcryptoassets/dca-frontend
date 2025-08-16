@@ -34,7 +34,7 @@ export const metadata: Metadata = {
   other: {
     'fc:frame': JSON.stringify({
       version: 'next',
-      imageUrl: 'https://dca.bitmor.xyz/mini-app/hero.png',
+      imageUrl: 'https://dca.bitmor.xyz/mini-app/preview.png',
       button: {
         // title: 'Launch Bitmor',
         title: 'Join the Waitlist',
@@ -49,7 +49,7 @@ export const metadata: Metadata = {
     }),
     'fc:miniapp': JSON.stringify({
       version: 'next',
-      imageUrl: 'https://dca.bitmor.xyz/mini-app/hero.png',
+      imageUrl: 'https://dca.bitmor.xyz/mini-app/preview.png',
       button: {
         // title: 'Launch Bitmor',
         title: 'Join the Waitlist',
