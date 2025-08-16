@@ -1,11 +1,22 @@
 'use client'
+import { useMiniKit } from '@coinbase/onchainkit/minikit'
 import { Button } from '@heroui/react'
 import Image from 'next/image'
-import { useRouter } from 'next/navigation'
+// import { useRouter } from 'next/navigation'
 import InlineSVG from 'react-inlinesvg'
 
 export default function Home() {
-  const router = useRouter()
+  // const router = useRouter()
+  const { context } = useMiniKit()
+  console.log('context', context?.user.fid)
+
+  const handleSubmit = async () => {
+    const res = await fetch('/api/waitlist', {
+      method: 'POST',
+      body: JSON.stringify({ fid: context?.user.fid }),
+    })
+    console.log('Response from /api/waitlist:', res)
+  }
 
   return (
     <div className="bg-background relative grid min-h-screen items-end justify-items-end">
@@ -44,10 +55,12 @@ export default function Home() {
           size="lg"
           className="border-2 border-[#F6921A] bg-gradient-to-r from-[#F7931A] to-[#C46200] font-medium"
           onPress={() => {
-            router.push('/home')
+            // router.push('/home')
+            handleSubmit()
           }}
         >
-          Plan Your Bitcoin Treasury
+          Join the Waitlist
+          {/* Plan Your Bitcoin Treasury */}
         </Button>
       </main>
     </div>
