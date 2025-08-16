@@ -36,7 +36,7 @@ export default function GradientBorderCard({
           <Image
             src="/extras/bg-dots.png"
             alt="BG Dots"
-            className="absolute -top-2 -right-4 -bottom-2 -left-4 z-0 h-full w-full object-cover mix-blend-overlay select-none"
+            className="pointer-events-none absolute -top-2 -right-4 -bottom-2 -left-4 z-0 h-full w-full object-cover mix-blend-overlay select-none"
             width={382}
             height={137}
           />

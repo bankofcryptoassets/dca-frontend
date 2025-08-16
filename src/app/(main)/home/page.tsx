@@ -3,6 +3,7 @@ import { CardTitle } from '@/components/CardTitle'
 import GradientBorderCard from '@/components/GradientBorderCard'
 import { Button, Chip, Divider, Progress } from '@heroui/react'
 import InlineSVG from 'react-inlinesvg'
+import { FaShareNodes } from 'react-icons/fa6'
 
 export default function HomePage() {
   return (
@@ -26,7 +27,7 @@ export default function HomePage() {
 
           <div className="flex flex-col gap-2">
             <div>
-              <span className="text-[28px] font-bold">32 </span>
+              <span className="text-[28px]">0.32 </span>
               <span className="text-foreground/50 text-sm">/0.5 BTC</span>
             </div>
 
@@ -42,19 +43,31 @@ export default function HomePage() {
 
           <div className="flex items-center justify-between gap-2">
             <div>
-              <div className="text-foreground/50 mb-0.5 text-sm">
+              <div className="text-foreground/50 mb-0.5 text-xs">
                 Est. Days Remaining
               </div>
-              <div>58 Days</div>
+              <div className="text-sm">58 Days</div>
             </div>
 
-            <Chip
-              color="default"
-              variant="faded"
-              className="text-foreground/70 text-xs"
-            >
-              56% Completed
-            </Chip>
+            <div className="flex items-center gap-2">
+              <Chip
+                color="default"
+                variant="faded"
+                className="text-foreground/70 px-0 text-xs"
+              >
+                56% Completed
+              </Chip>
+
+              <Button
+                color="primary"
+                size="sm"
+                variant="bordered"
+                className="h-7 gap-1 rounded-full border-1 px-2 font-medium"
+                endContent={<FaShareNodes />}
+              >
+                Share
+              </Button>
+            </div>
           </div>
         </div>
       </GradientBorderCard>
@@ -136,7 +149,7 @@ export default function HomePage() {
           </div>
 
           <div className="flex flex-col gap-2">
-            <div className="text-[28px]">0.32 BTC</div>
+            <div className="text-[28px]">0.02 BTC</div>
 
             <Progress
               classNames={{
@@ -153,7 +166,7 @@ export default function HomePage() {
       <Divider className="my-4 bg-[radial-gradient(50%_23209.76%_at_50%_50%,_#FFFFFF_0%,_rgba(255,_255,_255,_0)_100%)] opacity-20" />
 
       <GradientBorderCard bgGradient bgDots>
-        <div className="z-1 flex flex-col gap-2">
+        <div className="relative z-1 flex flex-col gap-2">
           <div className="flex items-center justify-between gap-2">
             <CardTitle
               title="DUST SWAP"
