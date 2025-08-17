@@ -33,8 +33,16 @@ export default function Home() {
   }
 
   const handleSubmit = async () => {
+    // for testing only
+    // handleSuccess()
+    // return
+
     if (!context?.user?.fid) {
-      addToast({ title: 'Please open in Farcaster', color: 'danger' })
+      addToast({
+        title: 'Something went wrong',
+        description: 'Please try again later',
+        color: 'danger',
+      })
       return
     }
 
@@ -96,8 +104,13 @@ export default function Home() {
         <div className="flex flex-col gap-5">
           <p className="text-center text-2xl">Stack Bitcoin Every Day</p>
 
-          <p className="text-foreground/50 text-center text-base">
-            Protect What You’ve Earned, Forever.
+          <p
+            className={cn(
+              'text-foreground/50 h-6 text-center text-base transition-[height,opacity] duration-300',
+              isWaitlistJoined && 'h-0 opacity-0'
+            )}
+          >
+            Protect What You&apos;ve Earned, Forever.
           </p>
 
           <div className="flex flex-col gap-2">
@@ -114,7 +127,7 @@ export default function Home() {
                 suits you well.
               </p>
               <p className="text-foreground/50 text-center text-sm leading-tight">
-                We’ll notify you when we go live.
+                We&apos;ll notify you when we go live.
               </p>
               <p className="text-foreground/50 text-center text-sm leading-tight">
                 Stack BTC with us and secure your seat at the Private Round
