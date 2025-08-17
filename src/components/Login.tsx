@@ -16,12 +16,11 @@ export const Login = () => {
     status: signMessageStatus,
   } = useSignMessage()
 
-  const handleConnect = () => {
-    connect({ connector: farcasterMiniApp() })
-  }
-
-  const handleSignMessage = () => {
-    signMessage({ message: 'hello world' })
+  const handleConnect = async () => {
+    await connect({ connector: farcasterMiniApp() })
+    await signMessage({
+      message: `Sign this message to authenticate with Bitmor. This request will not trigger a blockchain transaction or cost any gas fees.`,
+    })
   }
 
   console.log('Wallet DATA', {
@@ -40,25 +39,14 @@ export const Login = () => {
   if (isConnected) {
     return (
       <div className="space-y-4">
-        <div className="text-center">
-          <div className="mb-2 text-sm text-gray-600">Connected account:</div>
-          <div className="rounded bg-gray-100 p-2 font-mono text-sm">
+        <div className="overflow-hidden text-center">
+          <div className="mb-2 text-sm">Connected account:</div>
+          <div className="rounded p-2 font-mono text-sm break-all">
             {address}
           </div>
         </div>
 
         <div className="space-y-2">
-          <Button
-            fullWidth
-            color="primary"
-            variant="shadow"
-            className="w-full border-2 border-[#F6921A] bg-gradient-to-r from-[#F7931A] to-[#C46200] font-medium"
-            onPress={handleSignMessage}
-            isLoading={isPending}
-          >
-            {isPending ? 'Signing...' : 'Sign message'}
-          </Button>
-
           {data && (
             <div className="mt-4 rounded border border-green-200 bg-green-50 p-3">
               <div className="mb-1 text-sm font-medium text-green-800">

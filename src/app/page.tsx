@@ -154,7 +154,17 @@ export default function Home() {
           onPress={() => {
             // router.push('/create')
 
-            if (isWaitlistJoined) return
+            if (isWaitlistJoined) {
+              sdk.haptics.notificationOccurred('success')
+              setTimeout(() => {
+                sdk.haptics.notificationOccurred('error')
+              }, 3000)
+              setTimeout(() => {
+                sdk.haptics.notificationOccurred('warning')
+              }, 60000)
+
+              return
+            }
             handleSubmit()
           }}
           endContent={
