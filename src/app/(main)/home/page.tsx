@@ -386,13 +386,90 @@ export default function HomePage() {
             <div>0.495 BTC</div>
           </div>
 
-          <Button
-            color="danger"
-            variant="bordered"
-            className="mt-4 border-[#FF4038]/10 bg-[#FF4038]/10 font-medium"
-          >
-            Do Early Withdraw
-          </Button>
+          <Drawer>
+            <DrawerTrigger asChild>
+              <Button
+                color="danger"
+                variant="bordered"
+                className="mt-4 border-[#FF4038]/10 bg-[#FF4038]/10 font-medium"
+              >
+                Do Early Withdraw
+              </Button>
+            </DrawerTrigger>
+
+            <DrawerContent className="border-[#FF4038]">
+              <DrawerHeader className="px-5 pt-6 pb-0">
+                <DrawerTitle className="text-xl">Quit Plan</DrawerTitle>
+
+                <div className="mt-5 flex flex-col gap-2">
+                  <div className="flex items-center justify-between">
+                    <div className="text-foreground/50">
+                      Current BTC Balance
+                    </div>
+                    <div className="font-medium">0.1 BTC</div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="text-foreground/50">
+                      Date of Withdrawal Request
+                    </div>
+                    <div className="font-medium">17 AUG 2025</div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="text-foreground/50">Time Delay Set</div>
+                    <div className="font-medium">7 days</div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="text-foreground/50">Early Exit Penalty</div>
+                    <div className="text-danger font-medium">- 0.01 BTC</div>
+                  </div>
+                </div>
+
+                <Divider className="my-6 bg-[radial-gradient(50%_23209.76%_at_50%_50%,_#FFFFFF_0%,_rgba(255,_255,_255,_0)_100%)] opacity-20" />
+
+                <div className="flex w-full flex-col items-center gap-2">
+                  <div className="text-foreground/50 text-sm">
+                    You&apos;ll Get
+                  </div>
+                  <div className="flex items-center justify-center gap-2 text-center text-[40px]">
+                    <span>0.09 BTC</span>
+                    <Chip
+                      color="primary"
+                      variant="flat"
+                      className="text-primary text-sm"
+                    >
+                      ~$50
+                    </Chip>
+                  </div>
+                </div>
+
+                <div className="my-6 flex items-center gap-2.5 rounded-full bg-[radial-gradient(50%_495.17%_at_50%_50%,_rgba(255,_255,_255,_0.1)_0%,_rgba(153,_153,_153,_0.1)_100%)] px-3 py-1.5">
+                  <span className="h-px w-full rotate-180 bg-[linear-gradient(90deg,_#FFFFFF_0%,_rgba(255,_255,_255,_0)_100%)] opacity-10"></span>
+                  <span className="text-foreground/50 w-full flex-1 flex-shrink-0 text-sm whitespace-nowrap">
+                    BTC will hit the wallet on{' '}
+                    <span className="text-foreground">17 SEP 2025</span>
+                  </span>
+                  <span className="h-px w-full bg-[linear-gradient(90deg,_#FFFFFF_0%,_rgba(255,_255,_255,_0)_100%)] opacity-10"></span>
+                </div>
+
+                <div className="text-foreground/75 mb-6 text-center text-sm">
+                  <p>Patience Builds Freedom.</p>
+                  <p className="text-foreground/50">
+                    You&apos;re 50% There. Don&apos;t Quit Now. Keep Going.
+                  </p>
+                </div>
+              </DrawerHeader>
+
+              <DrawerFooter className="px-5 pt-0 pb-10">
+                <Button
+                  color="danger"
+                  size="lg"
+                  className="border-2 border-[#FF4038] bg-gradient-to-r from-[#FF4038] to-[#B7241E] font-medium"
+                >
+                  Quit Plan
+                </Button>
+              </DrawerFooter>
+            </DrawerContent>
+          </Drawer>
 
           <p className="text-center text-sm font-medium">
             Withdraw after 30 Days (No Penalty)
