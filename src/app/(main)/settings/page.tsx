@@ -21,17 +21,17 @@ export default function SettingsPage() {
           <div className="flex flex-col gap-3 text-sm font-medium">
             <div className="flex items-center justify-between gap-2">
               <div>Purchase Confirmations</div>
-              <Switch size="sm" className="origin-right scale-75" />
+              <Switch size="sm" />
             </div>
 
             <div className="flex items-center justify-between gap-2">
               <div>Streak Reminders</div>
-              <Switch size="sm" className="origin-right scale-75" />
+              <Switch size="sm" />
             </div>
 
             <div className="flex items-center justify-between gap-2">
               <div>Reward Notifications</div>
-              <Switch size="sm" className="origin-right scale-75" />
+              <Switch size="sm" />
             </div>
           </div>
         </div>

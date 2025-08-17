@@ -3,7 +3,7 @@ import { CardTitle } from '@/components/CardTitle'
 import GradientBorderCard from '@/components/GradientBorderCard'
 import { Button, Chip, Divider, NumberInput, Progress } from '@heroui/react'
 import InlineSVG from 'react-inlinesvg'
-import { FaShareNodes } from 'react-icons/fa6'
+import { FaCheck, FaFlag, FaShareNodes } from 'react-icons/fa6'
 import {
   Drawer,
   DrawerContent,
@@ -12,6 +12,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from '@/components/Drawer'
+import Image from 'next/image'
 
 export default function HomePage() {
   return (
@@ -239,50 +240,86 @@ export default function HomePage() {
       </GradientBorderCard>
 
       {/* REWARDS EARNED */}
-      <GradientBorderCard>
-        <div className="flex flex-col gap-4">
+      <GradientBorderCard
+        wrapperClassName="relative bg-[linear-gradient(180deg,_rgba(247,_147,_26,_0.192157)_14.78%,_#F7931A_92.41%)] "
+        className="z-1 shadow-[0px_-22px_32.4px_0px_#F7931A_inset]"
+      >
+        <Image
+          src="/extras/bg-dots-rewards.png"
+          alt="BG Dots"
+          className="pointer-events-none absolute -top-8 right-0 bottom-0 left-0 z-0 h-full w-full object-cover mix-blend-lighten select-none"
+          width={382}
+          height={280}
+        />
+
+        <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between gap-2">
             <CardTitle
               title="REWARDS EARNED"
               icon={<InlineSVG src="/icons/gift.svg" className="size-4" />}
             />
 
-            <Button
-              color="primary"
-              className="text-primary h-9 rounded-full bg-transparent bg-[linear-gradient(90deg,_rgba(247,_147,_26,_0)_0%,_rgba(247,_147,_26,_0.5)_100%)] font-medium"
-              startContent={
-                <InlineSVG
-                  src="/icons/bolt.svg"
-                  className="text-primary size-4"
+            <div className="flex items-center gap-2">
+              <Button
+                color="primary"
+                size="sm"
+                className="text-primary w-auto min-w-auto gap-1 rounded-full bg-transparent bg-[linear-gradient(90deg,_rgba(247,_147,_26,_0)_0%,_rgba(247,_147,_26,_0.5)_100%)] px-2 font-medium"
+                startContent={
+                  <InlineSVG
+                    src="/icons/bolt.svg"
+                    className="text-primary size-4"
+                  />
+                }
+              >
+                23 Days
+              </Button>
+
+              <Button
+                color="primary"
+                size="sm"
+                className="bg-primary w-auto min-w-auto gap-1 rounded-full border border-[#452B0B] px-2 font-bold text-[#452B0B]"
+                startContent={
+                  <InlineSVG src="/icons/asteroid.svg" className="size-4" />
+                }
+              >
+                2x
+              </Button>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-3">
+            <div className="text-[28px] leading-tight">0.02 BTC</div>
+
+            <div className="w-full rounded-[10px] border border-white/5 bg-[linear-gradient(90deg,_rgba(255,_215,_167,_0.05)_0%,_rgba(119,_119,_119,_0.1)_100%)] p-2.5 backdrop-blur-2xl">
+              <div className="mb-2.5 flex items-center px-1">
+                <div className="bg-primary grid size-7 flex-shrink-0 place-items-center rounded-full">
+                  <FaCheck className="size-3.5 text-[#452B0B]" />
+                </div>
+
+                <Progress
+                  size="sm"
+                  classNames={{
+                    base: 'rounded-none',
+                    track: 'bg-[#34312F] rounded-none',
+                    indicator:
+                      'bg-[linear-gradient(90deg,_#E08016_0%,_#FFBE77_100%)]',
+                  }}
+                  value={40}
                 />
-              }
-            >
-              23 Days
-            </Button>
-          </div>
 
-          <div className="flex flex-col gap-1 text-sm">
-            <div className="flex items-center justify-between">
-              <div className="text-foreground/50">Next Milestone</div>
-              <div className="text-foreground/50">Days Remaining</div>
+                <div className="grid size-7 flex-shrink-0 place-items-center rounded-full bg-[#34312F]">
+                  <FaFlag className="text-primary size-3" />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between gap-1 text-center text-xs">
+                <div>Day 20</div>
+                <div className="text-foreground/50 text-[10px]">
+                  Next Milestone in 4 Days. Keep going
+                </div>
+                <div>Day 40</div>
+              </div>
             </div>
-            <div className="flex items-center justify-between">
-              <div>In 25 Weeks</div>
-              <div>58 Days</div>
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <div className="text-[28px]">0.02 BTC</div>
-
-            <Progress
-              classNames={{
-                base: 'h-3.5 border-3 border-foreground/20 rounded-full',
-                track: 'bg-foreground/20',
-                indicator: 'bg-[#F89820]',
-              }}
-              value={85}
-            />
           </div>
         </div>
       </GradientBorderCard>
