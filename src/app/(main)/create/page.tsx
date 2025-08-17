@@ -13,7 +13,7 @@ import {
   Tooltip,
 } from '@heroui/react'
 import Image from 'next/image'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import InlineSVG from 'react-inlinesvg'
 import { IoIosInformationCircle } from 'react-icons/io'
 
@@ -21,11 +21,22 @@ export default function CreatePage() {
   const [step, setStep] = useState<0 | 1 | 2>(0)
 
   const handleNextStep = () => {
-    setStep((prev) => (prev === 0 ? 1 : prev === 1 ? 2 : 0))
+    setStep((prev) => (prev === 0 ? 1 : prev === 1 ? 2 : 2))
   }
+
+  const handleBackStep = () => {
+    setStep((prev) => (prev === 0 ? 0 : prev === 1 ? 0 : 1))
+  }
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.scrollTo(0, 0)
+    }
+  }, [step])
 
   const [selected, setSelected] = useState<'daily' | 'weekly'>('daily')
   const [selectedTokens, setSelectedTokens] = useState<string[]>([])
+  const [exitFee, setExitFee] = useState(2)
 
   const handleSelectToken = (token: string) => {
     setSelectedTokens((prev) => {
@@ -103,16 +114,6 @@ export default function CreatePage() {
                   <Tab key="daily" title="Daily" />
                   <Tab key="weekly" title="Weekly" />
                 </Tabs>
-
-                <div className="flex items-center gap-2.5 rounded-full bg-[radial-gradient(50%_495.17%_at_50%_50%,_rgba(255,_255,_255,_0.1)_0%,_rgba(153,_153,_153,_0.1)_100%)] px-3 py-1.5">
-                  <span className="h-px w-full rotate-180 bg-[linear-gradient(90deg,_#FFFFFF_0%,_rgba(255,_255,_255,_0)_100%)] opacity-10"></span>
-                  <span className="text-foreground/50 w-full flex-1 flex-shrink-0 text-xs whitespace-nowrap">
-                    It will take{' '}
-                    <span className="text-foreground">24 days</span> to reach
-                    your goal
-                  </span>
-                  <span className="h-px w-full bg-[linear-gradient(90deg,_#FFFFFF_0%,_rgba(255,_255,_255,_0)_100%)] opacity-10"></span>
-                </div>
               </div>
 
               <div className="flex flex-col gap-2">
@@ -136,6 +137,15 @@ export default function CreatePage() {
                   isWheelDisabled
                   hideStepper
                 />
+              </div>
+
+              <div className="flex items-center gap-2.5 rounded-full bg-[radial-gradient(50%_495.17%_at_50%_50%,_rgba(255,_255,_255,_0.1)_0%,_rgba(153,_153,_153,_0.1)_100%)] px-3 py-1.5">
+                <span className="h-px w-full rotate-180 bg-[linear-gradient(90deg,_#FFFFFF_0%,_rgba(255,_255,_255,_0)_100%)] opacity-10"></span>
+                <span className="text-foreground/50 w-full flex-1 flex-shrink-0 text-xs whitespace-nowrap">
+                  It will take <span className="text-foreground">24 days</span>{' '}
+                  to reach your goal
+                </span>
+                <span className="h-px w-full bg-[linear-gradient(90deg,_#FFFFFF_0%,_rgba(255,_255,_255,_0)_100%)] opacity-10"></span>
               </div>
 
               <Divider className="bg-[radial-gradient(50%_23209.76%_at_50%_50%,_#FFFFFF_0%,_rgba(255,_255,_255,_0)_100%)] opacity-20" />
@@ -218,33 +228,59 @@ export default function CreatePage() {
 
               <Divider className="bg-[radial-gradient(50%_23209.76%_at_50%_50%,_#FFFFFF_0%,_rgba(255,_255,_255,_0)_100%)] opacity-20" />
 
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-4">
                 <label
                   htmlFor="exit-fee"
                   className="flex items-center gap-2 text-sm"
                 >
                   Exit Fee
-                  <Tooltip content="Time Delay">
+                  <Tooltip content="Exit Fee">
                     <IoIosInformationCircle className="text-foreground/50 size-4" />
                   </Tooltip>
                 </label>
 
-                <Slider
-                  className="w-full"
-                  defaultValue={0.4}
-                  maxValue={1}
-                  minValue={0}
-                  step={0.01}
-                  color="primary"
-                  id="exit-fee"
-                  showTooltip
-                />
-
-                <div className="flex flex-col items-center text-center">
-                  <div className="text-foreground text-xl">0.223423</div>
-                  <div className="text-foreground/75 text-sm font-medium">
-                    BTC Fee
+                <div className="flex items-center gap-5">
+                  <div className="text-foreground text-[40px] leading-none">
+                    {exitFee}%
                   </div>
+                  <div className="bg-primary flex items-center gap-1 rounded-full border border-[#452B0B] px-2 py-1 text-xs font-semibold text-[#452B0B]">
+                    <Image
+                      src="/icons/asteroid.svg"
+                      alt="Asteroid"
+                      width={16}
+                      height={16}
+                    />
+                    <span>{exitFee}x</span>
+                    <span>Multiplier</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <div className="text-xs">0%</div>
+                  <Slider
+                    // @ts-expect-error - False Error
+                    color="default"
+                    value={exitFee}
+                    onChange={(value) => setExitFee(value as number)}
+                    maxValue={10}
+                    minValue={0}
+                    step={1}
+                    id="exit-fee"
+                    classNames={{
+                      base: 'w-full',
+                      trackWrapper: '',
+                      track: 'border-3 border-transparent bg-foreground/20',
+                      filler: 'bg-primary rounded-full',
+                      thumb:
+                        'bg-primary/30 backdrop-blur-xs size-7 after:bg-primary/30 after:backdrop-blur-xs after:text-[10px] after:text-[#452B0B] after:size-6 after:grid after:place-items-center after:content-[var(--data-value)]',
+                    }}
+                    style={
+                      {
+                        '--data-value': `"${exitFee || 0}%"`,
+                      } as React.CSSProperties
+                    }
+                  />
+                  <div className="text-xs">10%</div>
                 </div>
               </div>
 
@@ -300,6 +336,17 @@ export default function CreatePage() {
         >
           {step === 2 ? 'Accept & Confirm' : 'Next'}
         </Button>
+
+        {step !== 0 && (
+          <Button
+            color="primary"
+            variant="light"
+            className="-mt-2 w-full text-base font-medium"
+            onPress={handleBackStep}
+          >
+            Back
+          </Button>
+        )}
 
         <div className="flex items-center gap-3">
           {[0, 1, 2].map((item) => (
