@@ -1,6 +1,6 @@
 'use client'
 import { ReactNode } from 'react'
-import { HeroUIProvider } from '@heroui/react'
+import { HeroUIProvider, ToastProvider } from '@heroui/react'
 import { MiniKitProvider } from '@coinbase/onchainkit/minikit'
 import { baseSepolia } from 'wagmi/chains'
 import { InitializeMiniKit } from './InitializeMiniKit'
@@ -26,7 +26,10 @@ export const Providers = ({ children }: { children: ReactNode }) => {
       <InitializeMiniKit>
         <WagmiProvider config={wagmiConfig}>
           <QueryClientProvider client={queryClient}>
-            <HeroUIProvider>{children}</HeroUIProvider>
+            <HeroUIProvider>
+              <ToastProvider placement="top-center" />
+              {children}
+            </HeroUIProvider>
           </QueryClientProvider>
         </WagmiProvider>
       </InitializeMiniKit>
