@@ -20,7 +20,9 @@ export default function MainLayout({
   return (
     <>
       <div className="bg-background/10 sticky top-0 z-10 flex min-h-22 items-center justify-between px-5 py-6 backdrop-blur-3xl">
-        <Image src="/logo.svg" alt="Logo" width={88} height={20} />
+        <Link href="/home">
+          <Image src="/logo.svg" alt="Logo" width={88} height={20} />
+        </Link>
 
         {!isHideButton && (
           <Button
