@@ -13,14 +13,10 @@ import {
   DrawerTrigger,
 } from '@/components/Drawer'
 import Image from 'next/image'
-import { Login } from '@/components/Login'
 
 export default function HomePage() {
   return (
     <div className="space-y-3">
-      {/* For Testing Only - Remove this later */}
-      <Login />
-
       {/* GOAL PROGRESS */}
       <GradientBorderCard className="pb-6">
         <div className="flex flex-col gap-4">
