@@ -1,16 +1,36 @@
 'use client'
-import { addToast, Button } from '@heroui/react'
+import { addToast, Button, cn } from '@heroui/react'
 import Image from 'next/image'
 // import { useRouter } from 'next/navigation'
 import InlineSVG from 'react-inlinesvg'
 import { useMiniKit } from '@coinbase/onchainkit/minikit'
 import { sdk } from '@farcaster/miniapp-sdk'
-import { useState } from 'react'
+import { useLocalStorage } from 'usehooks-ts'
+import confetti from 'canvas-confetti'
+import { useMemo } from 'react'
+import SlotCounter from 'react-slot-counter'
 
 export default function Home() {
   // const router = useRouter()
   const { context } = useMiniKit()
-  const [joined, setJoined] = useState(false)
+  const [isWaitlistJoined, setIsWaitlistJoined] = useLocalStorage(
+    'bitmor-dca-waitlist-joined',
+    false
+  )
+  const waitlistCount = useMemo(() => {
+    return isWaitlistJoined ? 69 : 68
+  }, [isWaitlistJoined])
+
+  const handleSuccess = (alreadyJoined = false) => {
+    confetti({ particleCount: 100, spread: 70, origin: { y: 1 } })
+    setIsWaitlistJoined(true)
+    addToast({
+      title: alreadyJoined
+        ? 'You are already in the waitlist'
+        : 'Successfully Joined the Waitlist',
+      color: 'success',
+    })
+  }
 
   const handleSubmit = async () => {
     if (!context?.user?.fid) {
@@ -27,18 +47,13 @@ export default function Home() {
 
       if (!waitlistRes.ok) {
         if (waitlistRes.status === 409) {
-          addToast({
-            title: 'You are already in the waitlist',
-            color: 'primary',
-          })
-          setJoined(true)
+          handleSuccess(true)
           return
         }
         throw new Error('Failed to join waitlist')
       }
 
-      setJoined(true)
-      addToast({ title: 'Successfully Joined the Waitlist', color: 'success' })
+      handleSuccess()
 
       await sdk.actions.composeCast({
         text: "I'll be stacking Bitcoin daily with Bitmor. I've joined the waitlist and locked my chance at the Private Token Round. Only 500 seats, be early.",
@@ -59,7 +74,7 @@ export default function Home() {
       <Image
         src="/extras/main-bg.png"
         alt="Main Background"
-        className="absolute inset-0 z-0 h-full w-full object-cover"
+        className="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover select-none"
         fill
         priority
       />
@@ -71,18 +86,49 @@ export default function Home() {
           width={400}
           height={75}
           priority
-          className="absolute top-0 right-0 left-0 h-full max-h-18 w-full -translate-y-full"
+          className="pointer-events-none absolute top-0 right-0 left-0 h-full max-h-18 w-full -translate-y-full transition-transform select-none"
         />
 
-        <div className="mb-7 h-7">
-          <InlineSVG src="/logo.svg" className="h-8 w-auto" />
+        <div className="h-7">
+          <InlineSVG src="/logo.svg" className="h-8 w-auto select-none" />
         </div>
 
         <div className="flex flex-col gap-5">
           <p className="text-center text-2xl">Stack Bitcoin Every Day</p>
+
           <p className="text-foreground/50 text-center text-base">
             Protect What You’ve Earned, Forever.
           </p>
+
+          <div className="flex flex-col gap-2">
+            <div
+              className={cn(
+                'h-0 space-y-2 opacity-0 transition-[height,opacity] duration-500',
+                isWaitlistJoined && 'h-28.5 opacity-100'
+              )}
+            >
+              <p className="text-foreground/75 text-center text-lg leading-tight">
+                Thanks for joining the waitlist,
+                <br />
+                <span className="text-primary font-medium">69th</span> position
+                suits you well.
+              </p>
+              <p className="text-foreground/50 text-center text-sm leading-tight">
+                We’ll notify you when we go live.
+              </p>
+              <p className="text-foreground/50 text-center text-sm leading-tight">
+                Stack BTC with us and secure your seat at the Private Round
+                table.
+              </p>
+            </div>
+
+            <div className="text-foreground/75 flex flex-col items-center text-center text-lg">
+              <span className="text-primary text-3xl font-medium">
+                <SlotCounter value={waitlistCount} sequentialAnimationMode />
+              </span>
+              <span className="text-sm">People Joined</span>
+            </div>
+          </div>
         </div>
 
         <Button
@@ -93,14 +139,17 @@ export default function Home() {
           className="border-2 border-[#F6921A] bg-gradient-to-r from-[#F7931A] to-[#C46200] font-medium"
           onPress={() => {
             // router.push('/create')
+
+            if (isWaitlistJoined) return
             handleSubmit()
           }}
-          disabled={joined}
           endContent={
-            joined && <InlineSVG src="/icons/check.svg" className="h-4 w-4" />
+            isWaitlistJoined && (
+              <InlineSVG src="/icons/check.svg" className="size-4" />
+            )
           }
         >
-          {joined ? 'Waitlist Joined' : 'Join the Waitlist'}
+          {isWaitlistJoined ? 'Waitlist Joined' : 'Join the Waitlist'}
           {/* Plan Your Bitcoin Treasury */}
         </Button>
       </main>
