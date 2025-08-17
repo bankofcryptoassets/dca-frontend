@@ -30,7 +30,7 @@ export default function Home() {
         : 'Successfully Joined the Waitlist',
       color: 'success',
     })
-    sdk.haptics.impactOccurred('heavy')
+    sdk.haptics.notificationOccurred('success')
   }
 
   const handleSubmit = async () => {
