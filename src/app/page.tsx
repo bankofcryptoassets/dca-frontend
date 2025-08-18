@@ -80,13 +80,11 @@ export default function Home() {
 
   return (
     <div className="bg-background relative grid min-h-screen items-end justify-items-end">
-      <Image
-        src="/extras/main-bg.png"
-        alt="Main Background"
-        className="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover select-none"
-        fill
-        priority
-      />
+      <div className="pointer-events-none overflow-hidden select-none">
+        <div className="bg-primary absolute top-1/2 left-1/2 h-[651px] w-[378px] -translate-x-1/2 -translate-y-1/2 rounded-[100%] blur-[146px]"></div>
+        <div className="bg-primary absolute top-1/2 left-1/2 h-[254px] w-[228px] -translate-x-1/2 -translate-y-1/2 rounded-[100%] blur-[96px]"></div>
+        <div className="absolute inset-0 h-full w-full bg-[url(/extras/dots-bg-main.svg)] bg-center bg-repeat mix-blend-overlay transition-transform" />
+      </div>
 
       <main className="bg-background relative z-1 row-start-2 flex w-full flex-col items-center gap-10 px-10 pt-10 pb-15">
         <Image
