@@ -5,25 +5,37 @@ import Image from 'next/image'
 import InlineSVG from 'react-inlinesvg'
 import { useMiniKit } from '@coinbase/onchainkit/minikit'
 import { sdk } from '@farcaster/miniapp-sdk'
-import { useLocalStorage } from 'usehooks-ts'
 import confetti from 'canvas-confetti'
-import { useMemo } from 'react'
 import SlotCounter from 'react-slot-counter'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 export default function Home() {
   // const router = useRouter()
   const { context } = useMiniKit()
-  const [isWaitlistJoined, setIsWaitlistJoined] = useLocalStorage(
-    'bitmor-dca-waitlist-joined',
-    false
-  )
-  const waitlistCount = useMemo(() => {
-    return isWaitlistJoined ? 69 : 68
-  }, [isWaitlistJoined])
+  const queryClient = useQueryClient()
+
+  const { data: waitlistCount } = useQuery({
+    queryKey: ['waitlist-count'],
+    queryFn: () => fetch('/api/waitlist/count').then((res) => res.json()),
+  })
+
+  const { data: waitlistExists } = useQuery({
+    queryKey: ['waitlist-exists', context?.user?.fid],
+    queryFn: () =>
+      fetch('/api/waitlist/exists', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fid: context?.user?.fid }),
+      }).then((res) => res.json()),
+    enabled: !!context?.user?.fid,
+  })
+
+  const isWaitlistJoined = waitlistExists?.exists
 
   const handleSuccess = (alreadyJoined = false) => {
     confetti({ particleCount: 100, spread: 70, origin: { y: 1 } })
-    setIsWaitlistJoined(true)
+    queryClient.invalidateQueries({ queryKey: ['waitlist-exists'] })
+    queryClient.invalidateQueries({ queryKey: ['waitlist-count'] })
     addToast({
       title: alreadyJoined
         ? 'You are already in the waitlist'
@@ -120,10 +132,7 @@ export default function Home() {
               )}
             >
               <p className="text-foreground/75 text-center text-lg leading-tight">
-                Thanks for joining the waitlist,
-                <br />
-                <span className="text-primary font-medium">69th</span> position
-                suits you well.
+                Thanks for joining the waitlist.
               </p>
               <p className="text-foreground/50 text-center text-sm leading-tight">
                 We&apos;ll notify you when we go live.
@@ -135,8 +144,13 @@ export default function Home() {
             </div>
 
             <div className="text-foreground/75 flex flex-col items-center text-center text-lg">
-              <span className="text-primary text-3xl font-medium">
-                <SlotCounter value={waitlistCount} sequentialAnimationMode />
+              <span className="text-primary flex items-center gap-1 text-3xl font-medium">
+                <SlotCounter
+                  value={waitlistCount?.count || 250}
+                  sequentialAnimationMode
+                />
+                <span className="mt-0.5">/</span>
+                <SlotCounter value={500} sequentialAnimationMode />
               </span>
               <span className="text-sm">People Joined</span>
             </div>
