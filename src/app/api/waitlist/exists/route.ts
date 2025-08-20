@@ -6,15 +6,13 @@ export async function POST(request: Request) {
     return Response.json({ exists: false })
   }
 
-  const { data, error } = await supabase
+  const { data } = await supabase
     .from('waitlist')
     .select('fid')
     .eq('fid', fid)
     .single()
 
-  console.log('data ===============>', data, error)
-
-  if (data) {
+  if (data?.fid) {
     return Response.json({ exists: true })
   }
 
