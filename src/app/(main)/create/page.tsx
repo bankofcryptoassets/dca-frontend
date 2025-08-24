@@ -37,6 +37,9 @@ export default function CreatePage() {
   const [selected, setSelected] = useState<'daily' | 'weekly'>('daily')
   const [selectedTokens, setSelectedTokens] = useState<string[]>([])
   const [exitFee, setExitFee] = useState(2)
+  const [selectedBtcTarget, setSelectedBtcTarget] = useState<number>()
+  const [selectedContributionAmount, setSelectedContributionAmount] =
+    useState<number>()
 
   const handleSelectToken = (token: string) => {
     setSelectedTokens((prev) => {
@@ -61,25 +64,40 @@ export default function CreatePage() {
         <HeroBitcoinAnimation playReverse={step === 1} />
       </div>
 
-      <div className="mt-10 flex w-full flex-col items-center gap-5">
+      <div className="mt-10 flex w-full flex-col items-center gap-6">
         <div className="text-lg">{TITLES[step]}</div>
 
-        <GradientBorderCard className="pb-6">
+        <GradientBorderCard
+          className={cn('pb-6', !!SUBTITLES[step] && 'pt-12')}
+        >
+          {!!SUBTITLES[step] && (
+            <div className="text-background absolute -top-0.5 right-0 left-0">
+              <InlineSVG
+                src="/extras/title-strip.svg"
+                className="max-h-6 w-full"
+              />
+              <span className="absolute top-1 right-0 left-0 text-center text-[11px] font-semibold text-[#452B0B]">
+                {SUBTITLES[step]}
+              </span>
+            </div>
+          )}
+
           {step === 0 && (
             <div className="flex flex-col gap-5">
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-2.5 rounded-xl border border-white/10 bg-[#FFCA800F] px-3.5 py-3">
                 <label htmlFor="btc-goal" className="text-sm">
-                  BTC Goal
+                  Choose Your BTC Target
                 </label>
                 <NumberInput
-                  classNames={{ inputWrapper: 'rounded-xl' }}
+                  classNames={{ inputWrapper: 'rounded-xl bg-[#00000080]' }}
                   fullWidth
                   id="btc-goal"
                   placeholder="0.05"
-                  min={0.00000001}
-                  max={10000}
+                  minValue={0.00000001}
+                  maxValue={100000000}
                   step={0.000001}
                   variant="faded"
+                  formatOptions={{ maximumFractionDigits: 10 }}
                   size="sm"
                   color="primary"
                   endContent={
@@ -87,19 +105,41 @@ export default function CreatePage() {
                   }
                   isWheelDisabled
                   hideStepper
+                  value={selectedBtcTarget}
+                  onValueChange={(value) => setSelectedBtcTarget(value)}
                 />
+
+                <div className="flex flex-wrap gap-1">
+                  {PREDEFINED_BTC_TARGETS.map((item) => (
+                    <Chip
+                      key={item.value}
+                      color={
+                        selectedBtcTarget === item.value ? 'primary' : 'default'
+                      }
+                      variant="faded"
+                      className={cn(
+                        'cursor-pointer border-1 transition-colors',
+                        selectedBtcTarget === item.value &&
+                          'bg-primary/10 border-primary'
+                      )}
+                      onClick={() => setSelectedBtcTarget(item.value)}
+                    >
+                      {item.label}
+                    </Chip>
+                  ))}
+                </div>
               </div>
 
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-2.5 rounded-xl border border-white/10 bg-[#FFCA800F] px-3.5 py-3">
                 <label className="text-sm">
-                  At what frequency you want to invest
+                  How Often Do You Want to Invest?
                 </label>
 
                 <Tabs
                   className="w-full"
                   classNames={{
                     tabList:
-                      'w-full bg-foreground/10 rounded-xl border border-foreground/10',
+                      'w-full rounded-xl border border-foreground/10 bg-[#00000080]',
                     tab: 'rounded-lg',
                     tabContent:
                       'text-foreground group-data-[selected=true]:text-primary group-data-[selected=true]:font-medium',
@@ -116,12 +156,12 @@ export default function CreatePage() {
                 </Tabs>
               </div>
 
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-2.5 rounded-xl border border-white/10 bg-[#FFCA800F] px-3.5 py-3">
                 <label htmlFor="pledged-money" className="text-sm">
-                  Pledged Money
+                  Set Your Contribution Amount
                 </label>
                 <NumberInput
-                  classNames={{ inputWrapper: 'rounded-xl' }}
+                  classNames={{ inputWrapper: 'rounded-xl bg-[#00000080]' }}
                   fullWidth
                   id="pledged-money"
                   placeholder="500"
@@ -136,7 +176,32 @@ export default function CreatePage() {
                   }
                   isWheelDisabled
                   hideStepper
+                  value={selectedContributionAmount}
+                  onValueChange={(value) =>
+                    setSelectedContributionAmount(value)
+                  }
                 />
+                <div className="flex flex-wrap gap-1">
+                  {PREDEFINED_CONTRIBUTION_AMOUNTS.map((item) => (
+                    <Chip
+                      key={item.value}
+                      color={
+                        selectedContributionAmount === item.value
+                          ? 'primary'
+                          : 'default'
+                      }
+                      variant="faded"
+                      className={cn(
+                        'cursor-pointer border-1 transition-colors',
+                        selectedContributionAmount === item.value &&
+                          'bg-primary/10 border-primary'
+                      )}
+                      onClick={() => setSelectedContributionAmount(item.value)}
+                    >
+                      {item.label}
+                    </Chip>
+                  ))}
+                </div>
               </div>
 
               <div className="flex items-center gap-2.5 rounded-full bg-[radial-gradient(50%_495.17%_at_50%_50%,_rgba(255,_255,_255,_0.1)_0%,_rgba(153,_153,_153,_0.1)_100%)] px-3 py-1.5">
@@ -150,8 +215,8 @@ export default function CreatePage() {
 
               <Divider className="bg-[radial-gradient(50%_23209.76%_at_50%_50%,_#FFFFFF_0%,_rgba(255,_255,_255,_0)_100%)] opacity-20" />
 
-              <div className="flex flex-col gap-2">
-                <label className="text-sm">Select Tokens to Convert</label>
+              <div className="flex flex-col gap-2.5">
+                <label className="text-sm">Choose Tokens to Convert</label>
                 <div className="flex flex-wrap gap-1">
                   {['ETH', 'USDC', 'ZORA', 'WETH'].map((token) => (
                     <Chip
@@ -161,7 +226,7 @@ export default function CreatePage() {
                       }
                       variant="faded"
                       className={cn(
-                        'cursor-pointer border-1',
+                        'cursor-pointer border-1 transition-colors',
                         selectedTokens.includes(token) &&
                           'bg-primary/10 border-primary'
                       )}
@@ -174,8 +239,11 @@ export default function CreatePage() {
               </div>
 
               <div className="flex w-full items-center justify-between gap-2">
-                <label htmlFor="convert-dust-tokens" className="text-sm">
-                  Convert dust tokens to BTC
+                <label
+                  htmlFor="convert-dust-tokens"
+                  className="text-foreground/75 text-sm"
+                >
+                  Auto-convert small balances to BTC (set limit)
                 </label>
                 <NumberInput
                   className="max-w-24"
@@ -199,22 +267,22 @@ export default function CreatePage() {
           )}
 
           {step === 1 && (
-            <div className="flex flex-col gap-5">
-              <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-6">
+              <div className="flex flex-col gap-2 rounded-xl border border-white/10 bg-[#FFCA800F] px-3.5 py-3">
                 <label
                   htmlFor="time-delay"
                   className="flex items-center gap-2 text-sm"
                 >
-                  Time Delay
+                  Choose Lockup Period
                   <Tooltip content="Time Delay">
                     <IoIosInformationCircle className="text-foreground/50 size-4" />
                   </Tooltip>
                 </label>
                 <NumberInput
-                  classNames={{ inputWrapper: 'rounded-xl' }}
+                  classNames={{ inputWrapper: 'rounded-xl bg-[#00000080]' }}
                   fullWidth
                   id="time-delay"
-                  placeholder="Days to get your money after withdrawal"
+                  placeholder="Set withdrawal lockup to prevent impulse moves"
                   min={1}
                   max={1000}
                   step={1}
@@ -226,14 +294,22 @@ export default function CreatePage() {
                 />
               </div>
 
-              <Divider className="bg-[radial-gradient(50%_23209.76%_at_50%_50%,_#FFFFFF_0%,_rgba(255,_255,_255,_0)_100%)] opacity-20" />
+              <GradientBorderCard
+                wrapperClassName="rounded-b-none"
+                className="text-primary flex items-center justify-center gap-2.5 rounded-b-none bg-[linear-gradient(180deg,_rgba(247,_147,_26,_0.2)_0%,_rgba(247,_147,_26,_0.02)_100%)] py-3 text-xs"
+              >
+                <InlineSVG src="/extras/airdrop.svg" />
+                <span>Pledgers will be eligible for our future airdrops</span>
+              </GradientBorderCard>
+
+              {/* <Divider className="bg-[radial-gradient(50%_23209.76%_at_50%_50%,_#FFFFFF_0%,_rgba(255,_255,_255,_0)_100%)] opacity-20" /> */}
 
               <div className="flex flex-col gap-4">
                 <label
                   htmlFor="exit-fee"
                   className="flex items-center gap-2 text-sm"
                 >
-                  Exit Fee
+                  Choose Early Exit Penalty
                   <Tooltip content="Exit Fee">
                     <IoIosInformationCircle className="text-foreground/50 size-4" />
                   </Tooltip>
@@ -251,7 +327,7 @@ export default function CreatePage() {
                       height={16}
                     />
                     <span>{exitFee}x</span>
-                    <span>Multiplier</span>
+                    <span>REWARD MULTIPLIER</span>
                   </div>
                 </div>
 
@@ -284,10 +360,10 @@ export default function CreatePage() {
                 </div>
               </div>
 
-              <div className="text-foreground/50 rounded-full bg-[radial-gradient(50%_495.17%_at_50%_50%,_rgba(255,_255,_255,_0.1)_0%,_rgba(153,_153,_153,_0.1)_100%)] px-3 py-1.5 text-center text-xs">
-                Those who leave early pays rewards
-                <br />
-                to those who stay
+              <div className="my-4 bg-[radial-gradient(50%_495.17%_at_50%_50%,_#F7931A_0%,_rgba(247,_147,_26,_0)_100%)] p-px">
+                <div className="text-foreground/50 bg-background/70 px-3 py-4 text-center text-xs backdrop-blur-xl">
+                  If you leave early, your fee will reward those who stay.
+                </div>
               </div>
             </div>
           )}
@@ -295,11 +371,11 @@ export default function CreatePage() {
           {step === 2 && (
             <div className="my-4 flex flex-col gap-5 text-sm">
               <div className="flex items-center justify-between">
-                <div className="text-foreground/50">BTC Goal</div>
+                <div className="text-foreground/50">BTC Target</div>
                 <div>0.5 BTC</div>
               </div>
               <div className="flex items-center justify-between">
-                <div className="text-foreground/50">Pledged Money</div>
+                <div className="text-foreground/50">Committed Amount</div>
                 <div>$25</div>
               </div>
               <div className="flex items-center justify-between">
@@ -307,8 +383,19 @@ export default function CreatePage() {
                 <div>Weekly</div>
               </div>
               <div className="flex items-center justify-between">
-                <div className="text-foreground/50">Withdrawal Time Delay</div>
+                <div className="text-foreground/50">Withdrawal Lockup</div>
                 <div>30 Days</div>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="text-foreground/50">Exit Penalty Set</div>
+                <div className="flex items-center gap-3">
+                  <span className="flex items-center gap-1 rounded-full bg-[#F7931A] px-1.5 py-0.5 text-[9px] font-semibold text-[#452B0B]">
+                    <InlineSVG src="/icons/asteroid.svg" />
+                    <span>2x</span>
+                    <span className="opacity-70">REWARD MULTIPLIER</span>
+                  </span>
+                  <span>2%</span>
+                </div>
               </div>
 
               <Divider className="bg-[radial-gradient(50%_23209.76%_at_50%_50%,_#FFFFFF_0%,_rgba(255,_255,_255,_0)_100%)] opacity-20" />
@@ -320,22 +407,41 @@ export default function CreatePage() {
           )}
         </GradientBorderCard>
 
-        <Button
-          onPress={handleNextStep}
-          color="primary"
-          size="lg"
-          variant="shadow"
-          className="w-full border-2 border-[#F6921A] bg-gradient-to-r from-[#F7931A] to-[#C46200] font-medium"
-          endContent={
-            step === 2 ? (
-              <InlineSVG src="/icons/check.svg" />
-            ) : (
-              <InlineSVG src="/icons/arrow-right.svg" />
-            )
-          }
-        >
-          {step === 2 ? 'Accept & Confirm' : 'Next'}
-        </Button>
+        <div className="flex w-full gap-2">
+          {step === 1 && (
+            <Button
+              onPress={handleNextStep}
+              color="primary"
+              size="lg"
+              variant="bordered"
+              className="w-full gap-1 border-2 border-[#F6921A] text-sm font-medium"
+            >
+              Continue <span className="text-[9px]">(Without Rewards)</span>
+            </Button>
+          )}
+          <Button
+            onPress={handleNextStep}
+            color="primary"
+            size="lg"
+            variant="shadow"
+            className={cn(
+              'w-full border-2 border-[#F6921A] bg-gradient-to-r from-[#F7931A] to-[#C46200] font-medium',
+              step === 1 && 'text-sm'
+            )}
+            endContent={
+              step === 2 ? (
+                <InlineSVG src="/icons/check.svg" />
+              ) : (
+                <InlineSVG
+                  src="/icons/arrow-right.svg"
+                  className="flex-shrink-0"
+                />
+              )
+            }
+          >
+            {BUTTON_TITLES[step]}
+          </Button>
+        </div>
 
         {step !== 0 && (
           <Button
@@ -365,3 +471,26 @@ export default function CreatePage() {
 }
 
 const TITLES = ['Create Plan', 'Set Pledge', 'Review Plan']
+const SUBTITLES = [
+  'Start Your Bitcoin Ownership Journey',
+  'Commit to your target and earn rewards.',
+  '',
+]
+const BUTTON_TITLES = [
+  'Continue',
+  'Confirm Pledge',
+  'Start My BTC Ownership Journey',
+]
+const PREDEFINED_BTC_TARGETS = [
+  { value: 0.1, label: '0.1' },
+  { value: 0.01, label: '1M sats' },
+  { value: 0.05, label: '0.05' },
+  { value: 0.5, label: '0.5' },
+]
+
+const PREDEFINED_CONTRIBUTION_AMOUNTS = [
+  { value: 1, label: '$1' },
+  { value: 5, label: '$5' },
+  { value: 10, label: '$10' },
+  { value: 100, label: '$100' },
+]
