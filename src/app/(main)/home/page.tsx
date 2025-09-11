@@ -1,7 +1,15 @@
 'use client'
 import { CardTitle } from '@/components/CardTitle'
 import GradientBorderCard from '@/components/GradientBorderCard'
-import { Button, Chip, Divider, NumberInput, Progress } from '@heroui/react'
+import {
+  Button,
+  Chip,
+  cn,
+  Divider,
+  NumberInput,
+  Progress,
+  Tooltip,
+} from '@heroui/react'
 import InlineSVG from 'react-inlinesvg'
 import { FaCheck, FaFlag, FaShareNodes } from 'react-icons/fa6'
 import {
@@ -13,8 +21,99 @@ import {
   DrawerTrigger,
 } from '@/components/Drawer'
 import Image from 'next/image'
+import { useBtcPrice, useGetPlan } from '@/utils/api'
+import { useAccount } from 'wagmi'
+import { useMemo } from 'react'
+import { addDays, format } from 'date-fns'
+import { sdk } from '@farcaster/miniapp-sdk'
+import { MINI_APP_URL } from '@/utils/constants'
+import { convertToBTC, getDaysToReachGoal } from '@/utils/converters'
+
+const skipDays = (
+  cadence: 'daily' | 'weekly',
+  payments: number,
+  index: number
+) => {
+  return cadence === 'weekly'
+    ? 7 * (payments + 1 + index)
+    : 1 + (payments + 1 + index)
+}
 
 export default function HomePage() {
+  const { address } = useAccount()
+  const { data: plan } = useGetPlan(address!, { enabled: !!address })
+  const { data: btcPrice } = useBtcPrice()
+
+  const totalInvested = useMemo(() => {
+    const inUsd =
+      (plan?.data?.payments?.length || 0) * (plan?.data?.amount || 0)
+    return convertToBTC(inUsd, btcPrice?.data?.convertedPrice)
+  }, [plan, btcPrice])
+
+  const daysToReachGoal = useMemo(() => {
+    return getDaysToReachGoal(
+      plan?.data?.plan,
+      plan?.data?.targetAmount,
+      plan?.data?.amount,
+      btcPrice?.data?.convertedPrice
+    )
+  }, [plan, btcPrice])
+
+  const daysRemaining = useMemo(() => {
+    if (!plan?.data?.payments?.length)
+      return plan?.data?.plan === 'weekly'
+        ? daysToReachGoal * 7
+        : daysToReachGoal
+    return (
+      (plan?.data?.plan === 'weekly' ? daysToReachGoal * 7 : daysToReachGoal) -
+      (plan?.data?.payments?.length ?? 0)
+    )
+  }, [daysToReachGoal, plan])
+
+  const completedPercentage = useMemo(() => {
+    return Number.parseInt(
+      (((daysToReachGoal - daysRemaining) / daysToReachGoal) * 100)?.toFixed(0)
+    )
+  }, [daysRemaining, daysToReachGoal])
+
+  const nextBtcPurchases = useMemo(() => {
+    return [
+      {
+        date: format(
+          addDays(
+            new Date(plan?.data?.planCreated ?? ''),
+            // we need to skip days for the added payments
+            skipDays(
+              plan?.data?.plan ?? 'daily',
+              plan?.data?.payments?.length ?? 0,
+              0
+            )
+          ),
+          'do MMM, yyyy'
+        ),
+        cadence: plan?.data?.plan,
+        amount: plan?.data?.amount,
+        covered: false,
+      },
+      {
+        date: format(
+          addDays(
+            new Date(plan?.data?.planCreated ?? ''),
+            skipDays(
+              plan?.data?.plan ?? 'daily',
+              plan?.data?.payments?.length ?? 0,
+              1
+            )
+          ),
+          'do MMM, yyyy'
+        ),
+        cadence: plan?.data?.plan,
+        amount: plan?.data?.amount,
+        covered: false,
+      },
+    ]
+  }, [plan])
+
   return (
     <div className="space-y-3">
       {/* GOAL PROGRESS */}
@@ -28,13 +127,17 @@ export default function HomePage() {
 
             <Drawer>
               <DrawerTrigger asChild>
-                <Button
-                  color="primary"
-                  variant="bordered"
-                  className="border-primary/20 h-9 rounded-full font-medium"
-                >
-                  Edit Amount
-                </Button>
+                {/** TODO: Coming Soon */}
+                <Tooltip content="Coming Soon" color="primary">
+                  <Button
+                    color="primary"
+                    variant="bordered"
+                    className="border-primary/20 pointer-events-auto h-9 rounded-full font-medium"
+                    isDisabled
+                  >
+                    Edit Amount
+                  </Button>
+                </Tooltip>
               </DrawerTrigger>
 
               <DrawerContent>
@@ -93,8 +196,10 @@ export default function HomePage() {
 
           <div className="flex flex-col gap-2">
             <div>
-              <span className="text-[28px]">0.32 </span>
-              <span className="text-foreground/50 text-sm">/0.5 BTC</span>
+              <span className="text-[28px]">{totalInvested} </span>
+              <span className="text-foreground/50 text-sm">
+                /{plan?.data?.targetAmount} BTC
+              </span>
             </div>
 
             <Progress
@@ -103,7 +208,7 @@ export default function HomePage() {
                 track: 'bg-foreground/20',
                 indicator: 'bg-[#F89820]',
               }}
-              value={56}
+              value={completedPercentage}
             />
           </div>
 
@@ -112,7 +217,7 @@ export default function HomePage() {
               <div className="text-foreground/50 mb-0.5 text-xs">
                 Est. Days Remaining
               </div>
-              <div className="text-sm">58 Days</div>
+              <div className="text-sm">{daysRemaining} Days</div>
             </div>
 
             <div className="flex items-center gap-2">
@@ -121,7 +226,7 @@ export default function HomePage() {
                 variant="faded"
                 className="text-foreground/70 px-0 text-xs"
               >
-                56% Completed
+                {completedPercentage}% Completed
               </Chip>
 
               <Button
@@ -130,6 +235,12 @@ export default function HomePage() {
                 variant="bordered"
                 className="h-7 gap-1 rounded-full border-1 px-2 font-medium"
                 endContent={<FaShareNodes />}
+                onPress={async () => {
+                  await sdk.actions.composeCast({
+                    text: "I'm stacking Bitcoin daily with Bitmor. I've joined the waitlist and locked my chance at the Private Token Round. Only 500 seats, be early.",
+                    embeds: [MINI_APP_URL],
+                  })
+                }}
               >
                 Share
               </Button>
@@ -149,13 +260,17 @@ export default function HomePage() {
 
             <Drawer>
               <DrawerTrigger asChild>
-                <Button
-                  color="primary"
-                  variant="bordered"
-                  className="border-primary/20 h-9 rounded-full font-medium"
-                >
-                  Prepay
-                </Button>
+                {/** TODO: Coming Soon */}
+                <Tooltip content="Coming Soon" color="primary">
+                  <Button
+                    color="primary"
+                    variant="bordered"
+                    className="border-primary/20 pointer-events-auto h-9 rounded-full font-medium"
+                    isDisabled
+                  >
+                    Prepay
+                  </Button>
+                </Tooltip>
               </DrawerTrigger>
 
               <DrawerContent>
@@ -214,18 +329,29 @@ export default function HomePage() {
           </div>
 
           <div className="flex flex-col gap-3.5 text-sm">
-            <div className="flex flex-col gap-1">
-              <div className="flex items-center justify-between">
-                <div>23rd Oct, 2025</div>
-                <div>$50.00</div>
+            {nextBtcPurchases.map((purchase) => (
+              <div className="flex flex-col gap-1" key={purchase.date}>
+                <div className="flex items-center justify-between">
+                  <div>{purchase.date}</div>
+                  <div>${purchase.amount}</div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="text-foreground/50 capitalize">
+                    {purchase.cadence}
+                  </div>
+                  <div
+                    className={cn(
+                      'text-foreground/50',
+                      purchase.covered && 'text-[#2DCA72]'
+                    )}
+                  >
+                    {purchase.covered ? 'Covered' : 'Scheduled'}
+                  </div>
+                </div>
               </div>
-              <div className="flex items-center justify-between">
-                <div className="text-foreground/50">Weekly</div>
-                <div className="text-[#2DCA72]">Covered</div>
-              </div>
-            </div>
+            ))}
 
-            <div className="flex flex-col gap-1">
+            {/* <div className="flex flex-col gap-1">
               <div className="flex items-center justify-between">
                 <div>30th Oct, 2025</div>
                 <div>$50.00</div>
@@ -234,7 +360,7 @@ export default function HomePage() {
                 <div className="text-foreground/50">Weekly</div>
                 <div className="text-foreground/50">Scheduled</div>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </GradientBorderCard>
@@ -247,7 +373,7 @@ export default function HomePage() {
         <Image
           src="/extras/bg-dots-rewards.png"
           alt="BG Dots"
-          className="pointer-events-none absolute -top-8 right-0 bottom-0 left-0 z-0 h-full w-full object-cover mix-blend-lighten select-none"
+          className="pointer-events-none absolute -top-8 right-0 bottom-0 left-0 z-0 h-full w-full object-cover mix-blend-lighten blur-xs select-none"
           width={382}
           height={280}
         />
@@ -259,7 +385,12 @@ export default function HomePage() {
               icon={<InlineSVG src="/icons/gift.svg" className="size-4" />}
             />
 
-            <div className="flex items-center gap-2">
+            {/** TODO: Coming Soon */}
+            <Chip size="sm" color="primary" variant="shadow">
+              Coming Soon
+            </Chip>
+
+            {/* <div className="flex items-center gap-2">
               <Button
                 color="primary"
                 size="sm"
@@ -284,10 +415,11 @@ export default function HomePage() {
               >
                 2x
               </Button>
-            </div>
+            </div> */}
           </div>
 
-          <div className="flex flex-col gap-3">
+          {/** TODO: Coming Soon */}
+          <div className="pointer-events-none flex flex-col gap-3 blur-xs select-none">
             <div className="text-[28px] leading-tight">0.02 BTC</div>
 
             <div className="w-full rounded-[10px] border border-white/5 bg-[linear-gradient(90deg,_rgba(255,_215,_167,_0.05)_0%,_rgba(119,_119,_119,_0.1)_100%)] p-2.5 backdrop-blur-2xl">
@@ -334,14 +466,19 @@ export default function HomePage() {
               title="DUST SWAP"
               icon={<InlineSVG src="/icons/coin-swap.svg" className="size-4" />}
             />
+
+            <Chip size="sm" color="primary" variant="shadow">
+              Coming Soon
+            </Chip>
           </div>
 
-          <div>
+          {/** TODO: Coming Soon */}
+          <div className="pointer-events-none blur-xs select-none">
             <span className="text-[28px]">$0.53 </span>
             <span className="text-foreground/50 text-sm"> ~ 3 Less Days</span>
           </div>
 
-          <div className="absolute top-1/2 right-0 -translate-y-1/2">
+          <div className="pointer-events-none absolute top-1/2 right-0 -translate-y-1/2 blur-xs select-none">
             <Button
               variant="bordered"
               size="sm"
@@ -369,111 +506,120 @@ export default function HomePage() {
               }
               iconClassName="bg-[linear-gradient(102.3deg,_rgba(255,_255,_255,_0.1)_3.94%,_rgba(255,_255,_255,_0.07)_100%)]"
             />
+
+            <Chip size="sm" color="primary" variant="shadow">
+              Coming Soon
+            </Chip>
           </div>
 
-          <div className="flex items-center justify-between gap-2 text-sm">
-            <div className="text-foreground/50">Withdrawal Delay:</div>
-            <div>30 Days</div>
-          </div>
+          {/** TODO: Coming Soon */}
+          <div className="pointer-events-none flex flex-col gap-4 blur-xs select-none">
+            <div className="flex items-center justify-between gap-2 text-sm">
+              <div className="text-foreground/50">Withdrawal Delay:</div>
+              <div>30 Days</div>
+            </div>
 
-          <div className="flex items-center justify-between gap-2 text-sm">
-            <div className="text-foreground/50">Current penalty:</div>
-            <div>0.095 BTC</div>
-          </div>
+            <div className="flex items-center justify-between gap-2 text-sm">
+              <div className="text-foreground/50">Current penalty:</div>
+              <div>0.095 BTC</div>
+            </div>
 
-          <div className="flex items-center justify-between gap-2 text-sm">
-            <div className="text-foreground/50">Early Withdrawal Amount</div>
-            <div>0.495 BTC</div>
-          </div>
+            <div className="flex items-center justify-between gap-2 text-sm">
+              <div className="text-foreground/50">Early Withdrawal Amount</div>
+              <div>0.495 BTC</div>
+            </div>
 
-          <Drawer>
-            <DrawerTrigger asChild>
-              <Button
-                color="danger"
-                variant="bordered"
-                className="mt-4 border-[#FF4038]/10 bg-[#FF4038]/10 font-medium"
-              >
-                Do Early Withdraw
-              </Button>
-            </DrawerTrigger>
-
-            <DrawerContent className="border-[#FF4038]">
-              <DrawerHeader className="px-5 pt-6 pb-0">
-                <DrawerTitle className="text-xl">Quit Plan</DrawerTitle>
-
-                <div className="mt-5 flex flex-col gap-2">
-                  <div className="flex items-center justify-between">
-                    <div className="text-foreground/50">
-                      Current BTC Balance
-                    </div>
-                    <div className="font-medium">0.1 BTC</div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="text-foreground/50">
-                      Date of Withdrawal Request
-                    </div>
-                    <div className="font-medium">17 AUG 2025</div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="text-foreground/50">Time Delay Set</div>
-                    <div className="font-medium">7 days</div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="text-foreground/50">Early Exit Penalty</div>
-                    <div className="text-danger font-medium">- 0.01 BTC</div>
-                  </div>
-                </div>
-
-                <Divider className="my-6 bg-[radial-gradient(50%_23209.76%_at_50%_50%,_#FFFFFF_0%,_rgba(255,_255,_255,_0)_100%)] opacity-20" />
-
-                <div className="flex w-full flex-col items-center gap-2">
-                  <div className="text-foreground/50 text-sm">
-                    You&apos;ll Get
-                  </div>
-                  <div className="flex items-center justify-center gap-2 text-center text-[40px]">
-                    <span>0.09 BTC</span>
-                    <Chip
-                      color="primary"
-                      variant="flat"
-                      className="text-primary text-sm"
-                    >
-                      ~$50
-                    </Chip>
-                  </div>
-                </div>
-
-                <div className="my-6 flex items-center gap-2.5 rounded-full bg-[radial-gradient(50%_495.17%_at_50%_50%,_rgba(255,_255,_255,_0.1)_0%,_rgba(153,_153,_153,_0.1)_100%)] px-3 py-1.5">
-                  <span className="h-px w-full rotate-180 bg-[linear-gradient(90deg,_#FFFFFF_0%,_rgba(255,_255,_255,_0)_100%)] opacity-10"></span>
-                  <span className="text-foreground/50 w-full flex-1 flex-shrink-0 text-sm whitespace-nowrap">
-                    BTC will hit the wallet on{' '}
-                    <span className="text-foreground">17 SEP 2025</span>
-                  </span>
-                  <span className="h-px w-full bg-[linear-gradient(90deg,_#FFFFFF_0%,_rgba(255,_255,_255,_0)_100%)] opacity-10"></span>
-                </div>
-
-                <div className="text-foreground/75 mb-6 text-center text-sm">
-                  <p>Patience Builds Freedom.</p>
-                  <p className="text-foreground/50">
-                    You&apos;re 50% There. Don&apos;t Quit Now. Keep Going.
-                  </p>
-                </div>
-              </DrawerHeader>
-
-              <DrawerFooter className="px-5 pt-0 pb-10">
+            <Drawer>
+              <DrawerTrigger asChild>
                 <Button
                   color="danger"
-                  size="lg"
-                  className="border-2 border-[#FF4038] bg-gradient-to-r from-[#FF4038] to-[#B7241E] font-medium"
+                  variant="bordered"
+                  className="mt-4 border-[#FF4038]/10 bg-[#FF4038]/10 font-medium"
                 >
-                  Quit Plan
+                  Do Early Withdraw
                 </Button>
-              </DrawerFooter>
-            </DrawerContent>
-          </Drawer>
+              </DrawerTrigger>
 
-          <p className="text-center text-sm font-medium">
-            Withdraw after 30 Days (No Penalty)
-          </p>
+              <DrawerContent className="border-[#FF4038]">
+                <DrawerHeader className="px-5 pt-6 pb-0">
+                  <DrawerTitle className="text-xl">Quit Plan</DrawerTitle>
+
+                  <div className="mt-5 flex flex-col gap-2">
+                    <div className="flex items-center justify-between">
+                      <div className="text-foreground/50">
+                        Current BTC Balance
+                      </div>
+                      <div className="font-medium">0.1 BTC</div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="text-foreground/50">
+                        Date of Withdrawal Request
+                      </div>
+                      <div className="font-medium">17 AUG 2025</div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="text-foreground/50">Time Delay Set</div>
+                      <div className="font-medium">7 days</div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="text-foreground/50">
+                        Early Exit Penalty
+                      </div>
+                      <div className="text-danger font-medium">- 0.01 BTC</div>
+                    </div>
+                  </div>
+
+                  <Divider className="my-6 bg-[radial-gradient(50%_23209.76%_at_50%_50%,_#FFFFFF_0%,_rgba(255,_255,_255,_0)_100%)] opacity-20" />
+
+                  <div className="flex w-full flex-col items-center gap-2">
+                    <div className="text-foreground/50 text-sm">
+                      You&apos;ll Get
+                    </div>
+                    <div className="flex items-center justify-center gap-2 text-center text-[40px]">
+                      <span>0.09 BTC</span>
+                      <Chip
+                        color="primary"
+                        variant="flat"
+                        className="text-primary text-sm"
+                      >
+                        ~$50
+                      </Chip>
+                    </div>
+                  </div>
+
+                  <div className="my-6 flex items-center gap-2.5 rounded-full bg-[radial-gradient(50%_495.17%_at_50%_50%,_rgba(255,_255,_255,_0.1)_0%,_rgba(153,_153,_153,_0.1)_100%)] px-3 py-1.5">
+                    <span className="h-px w-full rotate-180 bg-[linear-gradient(90deg,_#FFFFFF_0%,_rgba(255,_255,_255,_0)_100%)] opacity-10"></span>
+                    <span className="text-foreground/50 w-full flex-1 flex-shrink-0 text-sm whitespace-nowrap">
+                      BTC will hit the wallet on{' '}
+                      <span className="text-foreground">17 SEP 2025</span>
+                    </span>
+                    <span className="h-px w-full bg-[linear-gradient(90deg,_#FFFFFF_0%,_rgba(255,_255,_255,_0)_100%)] opacity-10"></span>
+                  </div>
+
+                  <div className="text-foreground/75 mb-6 text-center text-sm">
+                    <p>Patience Builds Freedom.</p>
+                    <p className="text-foreground/50">
+                      You&apos;re 50% There. Don&apos;t Quit Now. Keep Going.
+                    </p>
+                  </div>
+                </DrawerHeader>
+
+                <DrawerFooter className="px-5 pt-0 pb-10">
+                  <Button
+                    color="danger"
+                    size="lg"
+                    className="border-2 border-[#FF4038] bg-gradient-to-r from-[#FF4038] to-[#B7241E] font-medium"
+                  >
+                    Quit Plan
+                  </Button>
+                </DrawerFooter>
+              </DrawerContent>
+            </Drawer>
+
+            <p className="text-center text-sm font-medium">
+              Withdraw after 30 Days (No Penalty)
+            </p>
+          </div>
         </div>
       </GradientBorderCard>
     </div>

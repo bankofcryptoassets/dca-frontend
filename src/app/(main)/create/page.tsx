@@ -22,6 +22,7 @@ import { useApproval } from '@/utils/useApproval'
 import { useAccount } from 'wagmi'
 import { useRouter } from 'next/navigation'
 import { useQueryClient } from '@tanstack/react-query'
+import { getDaysToReachGoal } from '@/utils/converters'
 
 export default function CreatePage() {
   const { address } = useAccount()
@@ -130,18 +131,12 @@ export default function CreatePage() {
     useState<number>()
 
   const daysToReachGoal = useMemo(() => {
-    if (!selectedBtcTarget || !btcPriceValue || !selectedContributionAmount)
-      return 0
-    // Calculate the total USD value needed to reach the BTC goal
-    const totalUSDNeeded = selectedBtcTarget * btcPriceValue
-    // Calculate how many contributions are needed
-    const numberOfContributions = Math.ceil(
-      totalUSDNeeded / selectedContributionAmount
+    return getDaysToReachGoal(
+      selectedCadence,
+      selectedBtcTarget,
+      selectedContributionAmount,
+      btcPriceValue
     )
-    // Calculate days based on cadence
-    if (selectedCadence === 'weekly') return numberOfContributions * 7
-    if (selectedCadence === 'daily') return numberOfContributions
-    return 0
   }, [
     selectedBtcTarget,
     btcPriceValue,
@@ -411,7 +406,7 @@ export default function CreatePage() {
                 </Button>
               </div>
 
-              <div className="pointer-events-none flex cursor-not-allowed flex-col gap-6 blur-sm select-none">
+              <div className="pointer-events-none flex cursor-not-allowed flex-col gap-6 blur-xs select-none">
                 <div className="flex flex-col gap-2 rounded-xl border border-white/10 bg-[#FFCA800F] px-3.5 py-3">
                   <label
                     htmlFor="time-delay"

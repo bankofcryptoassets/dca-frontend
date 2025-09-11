@@ -2,15 +2,14 @@
 import { ConnectWallet } from '@/components/ConnectWallet'
 import { Loader } from '@/components/Loader'
 import { useGetPlan } from '@/utils/api'
-import { Button, cn } from '@heroui/react'
+import { cn } from '@heroui/react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { HiBolt } from 'react-icons/hi2'
 import InlineSVG from 'react-inlinesvg'
 import { useAccount } from 'wagmi'
 
-// const hideButtons = ['/create']
+const hideButtons = ['/create']
 
 export default function MainLayout({
   children,
@@ -19,8 +18,8 @@ export default function MainLayout({
 }) {
   const pathname = usePathname()
   const router = useRouter()
-  // const isHideButton = hideButtons.includes(pathname)
-  const isHideButton = true
+  const isHideButton = hideButtons.includes(pathname)
+  // const isHideButton = true
   const { isConnected, address, isConnecting, isReconnecting } = useAccount()
   const { data, isLoading } = useGetPlan(address!, { enabled: !!address })
 
@@ -39,7 +38,8 @@ export default function MainLayout({
           <Image src="/logo.svg" alt="Logo" width={88} height={20} />
         </div>
 
-        {!isHideButton && (
+        {/* TODO: Coming soon */}
+        {/* {!isHideButton && (
           <Button
             color="primary"
             variant="shadow"
@@ -51,7 +51,7 @@ export default function MainLayout({
           >
             23 Days
           </Button>
-        )}
+        )} */}
       </div>
 
       <div className={cn('w-full px-5 pt-7 pb-28', isHideButton && 'pb-10')}>

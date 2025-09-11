@@ -1,9 +1,56 @@
+'use client'
 import { CardTitle } from '@/components/CardTitle'
 import GradientBorderCard from '@/components/GradientBorderCard'
-import { cn, Divider } from '@heroui/react'
+import { useBtcPrice, useGetPlan } from '@/utils/api'
+import { Chip, cn, Divider } from '@heroui/react'
+import { useMemo } from 'react'
 import InlineSVG from 'react-inlinesvg'
+import { useAccount } from 'wagmi'
+import { addDays, format } from 'date-fns'
+import { convertToBTC } from '@/utils/converters'
 
 export default function ActivityPage() {
+  const { address } = useAccount()
+  const { data: plan } = useGetPlan(address!, { enabled: !!address })
+  const { data: btcPrice } = useBtcPrice()
+
+  const totalPurchases = useMemo(
+    () => plan?.data?.payments?.length || 0,
+    [plan]
+  )
+
+  // construct activities
+  // 1. create plan will be first
+  // 2. now add all the payments as activities, but based on the count, since we won't have any exact info, we will do that from amount and target amount
+  const activities = useMemo(() => {
+    return [
+      {
+        id: 1,
+        date: format(new Date(plan?.data?.planCreated ?? ''), 'do MMM, yyyy'),
+        type: 'CREATION',
+        title: 'DCA Plan Created',
+      },
+      ...Array.from({ length: totalPurchases }).map((_, index) => ({
+        id: index + 2,
+        // get the plan creation date and add the 1 day if plan.plan is day and 7 days if plan.plan is weekly
+        date: format(
+          addDays(
+            new Date(plan?.data?.planCreated ?? ''),
+            plan?.data?.plan === 'weekly' ? 7 * (index + 1) : index + 1
+          ),
+          'do MMM, yyyy'
+        ),
+        type: 'PURCHASE',
+        title: 'DCA Purchase Executed',
+        amountBTC: convertToBTC(
+          plan?.data?.amount,
+          btcPrice?.data?.convertedPrice
+        ),
+        amountUSD: plan?.data?.amount,
+      })),
+    ]?.toReversed()
+  }, [plan, btcPrice, totalPurchases])
+
   return (
     <div>
       <GradientBorderCard bgGradient bgDots>
@@ -15,9 +62,14 @@ export default function ActivityPage() {
                 <InlineSVG src="/icons/coins-bitcoin.svg" className="size-4" />
               }
             />
+
+            <Chip size="sm" color="primary" variant="shadow">
+              Coming Soon
+            </Chip>
           </div>
 
-          <div>
+          {/** TODO: Coming Soon */}
+          <div className="pointer-events-none blur-xs select-none">
             <span className="text-[28px] leading-tight">86,000</span>
             <span className="text-foreground/50 ml-2 text-sm">SATS</span>
           </div>
@@ -36,7 +88,9 @@ export default function ActivityPage() {
               />
             </div>
 
-            <div className="mt-auto text-[40px] leading-tight">47</div>
+            <div className="mt-auto text-[40px] leading-tight">
+              {totalPurchases}
+            </div>
           </div>
         </GradientBorderCard>
 
@@ -51,7 +105,12 @@ export default function ActivityPage() {
               />
             </div>
 
-            <div className="text-[40px] leading-tight">39</div>
+            {/** TODO: Coming Soon */}
+            <Chip size="sm" color="primary" variant="shadow" className="mt-5">
+              Coming Soon
+            </Chip>
+
+            {/* <div className="text-[40px] leading-tight">0</div> */}
           </div>
         </GradientBorderCard>
       </div>
@@ -73,7 +132,7 @@ export default function ActivityPage() {
           </div>
 
           <div className="flex w-full flex-col gap-4">
-            {DUMMY_ACTIVITY.map((activity) => (
+            {activities.map((activity) => (
               <ActivityItem key={activity.id} activity={activity} />
             ))}
           </div>
@@ -86,19 +145,26 @@ export default function ActivityPage() {
 const ActivityItem = ({
   activity,
 }: {
-  activity: (typeof DUMMY_ACTIVITY)[number]
+  activity: {
+    id: number
+    date: string
+    type: string
+    title: string
+    amountBTC?: number
+    amountUSD?: number
+  }
 }) => {
-  const positiveNegativeBTC = activity.amountBTC > 0 ? '+' : '-'
-  const amoutBTCText = `${positiveNegativeBTC}${Math.abs(activity.amountBTC)} BTC`
+  const positiveNegativeBTC = (activity.amountBTC ?? 0) > 0 ? '+' : '-'
+  const amoutBTCText = `${positiveNegativeBTC}${Math.abs(activity.amountBTC ?? 0)} BTC`
   const btcColor =
     activity?.type === 'DUST_SWEEP'
       ? 'text-primary'
-      : activity.amountBTC > 0
+      : (activity.amountBTC ?? 0) > 0
         ? 'text-[#2DCA72]'
         : 'text-[#FF4038]'
 
-  const positiveNegativeUSD = activity.amountUSD > 0 ? '+' : '-'
-  const amoutUSDText = `${positiveNegativeUSD}$${Math.abs(activity.amountUSD)}`
+  const positiveNegativeUSD = (activity.amountUSD ?? 0) > 0 ? '+' : '-'
+  const amoutUSDText = `${positiveNegativeUSD}$${Math.abs(activity.amountUSD ?? 0)}`
 
   return (
     <div className="flex w-full items-start gap-2.5">
@@ -112,11 +178,15 @@ const ActivityItem = ({
       <div className="flex w-full flex-col gap-1 text-sm">
         <div className="flex items-center justify-between gap-1">
           <div className="text-foreground/50">{activity.date}</div>
-          <div className={cn('text-sm', btcColor)}>{amoutBTCText}</div>
+          {activity.type !== 'CREATION' && (
+            <div className={cn('text-sm', btcColor)}>{amoutBTCText}</div>
+          )}
         </div>
         <div className="flex items-start justify-between gap-1">
           <div className="">{activity.title}</div>
-          <div className="text-foreground/50">{amoutUSDText}</div>
+          {activity.type !== 'CREATION' && (
+            <div className="text-foreground/50">{amoutUSDText}</div>
+          )}
         </div>
       </div>
     </div>
@@ -129,47 +199,5 @@ const ICONS = {
   EXIT_PENALTY: '/icons/bitcoin-caution.svg',
   REFERRAL_BONUS: '/icons/user-switch.svg',
   DUST_SWEEP: '/icons/sweep.svg',
+  CREATION: '/icons/bolt-outline.svg',
 }
-
-const DUMMY_ACTIVITY = [
-  {
-    id: 1,
-    date: '21st Sept, 2025',
-    type: 'PURCHASE',
-    title: 'DCA Purchase Executed',
-    amountBTC: 0.00005,
-    amountUSD: 50.75,
-  },
-  {
-    id: 2,
-    date: '21st Sept, 2025',
-    type: 'STREAK_BOOST',
-    title: '7 Streak Boost Earned',
-    amountBTC: 0.000002,
-    amountUSD: 2.75,
-  },
-  {
-    id: 3,
-    date: '21st Sept, 2025',
-    type: 'EXIT_PENALTY',
-    title: 'Penalty Pool Contribution',
-    amountBTC: -0.000002,
-    amountUSD: -2.75,
-  },
-  {
-    id: 4,
-    date: '21st Sept, 2025',
-    type: 'REFERRAL_BONUS',
-    title: 'Referral Bonus',
-    amountBTC: 0.000002,
-    amountUSD: 2.75,
-  },
-  {
-    id: 5,
-    date: '21st Sept, 2025',
-    type: 'DUST_SWEEP',
-    title: 'Dust Sweep Executed',
-    amountBTC: 0.000002,
-    amountUSD: 3.75,
-  },
-]

@@ -8,6 +8,7 @@ import { sdk } from '@farcaster/miniapp-sdk'
 import confetti from 'canvas-confetti'
 import SlotCounter from 'react-slot-counter'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { MINI_APP_URL } from '@/utils/constants'
 
 export default function Home() {
   // const router = useRouter()
@@ -78,7 +79,7 @@ export default function Home() {
 
       await sdk.actions.composeCast({
         text: "I'll be stacking Bitcoin daily with Bitmor. I've joined the waitlist and locked my chance at the Private Token Round. Only 500 seats, be early.",
-        embeds: ['https://farcaster.xyz/miniapps/HVDZUx8hVTgA/bitmor'],
+        embeds: [MINI_APP_URL],
       })
     } catch (error) {
       console.error('Error:', error)

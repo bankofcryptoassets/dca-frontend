@@ -1,5 +1,5 @@
 'use client'
-import { Divider, Snippet, Switch } from '@heroui/react'
+import { Chip, Divider, Snippet, Switch } from '@heroui/react'
 import { CardTitle } from '@/components/CardTitle'
 import GradientBorderCard from '@/components/GradientBorderCard'
 import InlineSVG from 'react-inlinesvg'
@@ -14,11 +14,16 @@ export default function SettingsPage() {
               title="DCA NOTIFICATIONS"
               icon={<InlineSVG src="/icons/bell.svg" className="size-4" />}
             />
+
+            <Chip size="sm" color="primary" variant="shadow">
+              Coming Soon
+            </Chip>
           </div>
 
           <Divider className="bg-[linear-gradient(90deg,_#FFFFFF_0%,_rgba(255,_255,_255,_0)_100%)] opacity-20" />
 
-          <div className="flex flex-col gap-3 text-sm font-medium">
+          {/** TODO: Coming Soon */}
+          <div className="pointer-events-none flex flex-col gap-3 text-sm font-medium blur-xs select-none">
             <div className="flex items-center justify-between gap-2">
               <div>Purchase Confirmations</div>
               <Switch size="sm" />
@@ -46,9 +51,14 @@ export default function SettingsPage() {
               title="REFERRAL LINK"
               icon={<InlineSVG src="/icons/link.svg" className="size-4" />}
             />
+
+            <Chip size="sm" color="primary" variant="shadow">
+              Coming Soon
+            </Chip>
           </div>
 
-          <div>
+          {/** TODO: Coming Soon */}
+          <div className="pointer-events-none blur-xs select-none">
             <Snippet
               variant="flat"
               size="sm"
