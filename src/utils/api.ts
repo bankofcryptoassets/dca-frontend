@@ -38,7 +38,7 @@ type CreatePlanRequest = {
   target: number // max 4 decimal places
 }
 
-type CreatePlanResponse = GetPlanResponse
+type CreatePlanResponse = ResponseSuccess<undefined>
 
 type BtcPriceResponse = ResponseSuccess<{ convertedPrice: number }>
 
