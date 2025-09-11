@@ -57,7 +57,7 @@ export default function CreatePage() {
         alt="Create Background"
         width={400}
         height={480}
-        className="absolute top-16 right-0 left-0 z-0 w-full select-none"
+        className="pointer-events-none absolute top-16 right-0 left-0 z-0 w-full [mask-image:linear-gradient(to_bottom,_rgba(0,0,0,1)_0%,_rgba(0,0,0,1)_80%,_rgba(0,0,0,0)_100%)] select-none"
       />
 
       <div className="mt-5 grid place-items-center">

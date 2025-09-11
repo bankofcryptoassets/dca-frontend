@@ -1,12 +1,16 @@
 'use client'
+import { ConnectWallet } from '@/components/ConnectWallet'
+import { Loader } from '@/components/Loader'
+import { useGetPlan } from '@/utils/api'
 import { Button, cn } from '@heroui/react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { HiBolt } from 'react-icons/hi2'
 import InlineSVG from 'react-inlinesvg'
+import { useAccount } from 'wagmi'
 
-const hideButtons = ['/create']
+// const hideButtons = ['/create']
 
 export default function MainLayout({
   children,
@@ -15,14 +19,25 @@ export default function MainLayout({
 }) {
   const pathname = usePathname()
   const router = useRouter()
-  const isHideButton = hideButtons.includes(pathname)
+  // const isHideButton = hideButtons.includes(pathname)
+  const isHideButton = true
+  const { isConnected, address, isConnecting, isReconnecting } = useAccount()
+  const { data, isLoading } = useGetPlan(address!, { enabled: !!address })
+
+  if (isConnecting || isReconnecting || isLoading) return <Loader />
+
+  if (!isConnected) return <ConnectWallet />
+
+  if (pathname !== '/create' && !data?.data?._id) return router.push('/create')
+
+  if (pathname === '/create' && data?.data?._id) return router.push('/home')
 
   return (
     <>
       <div className="bg-background/10 sticky top-0 z-10 flex min-h-22 items-center justify-between px-5 py-6 backdrop-blur-3xl">
-        <Link href="/home">
+        <div>
           <Image src="/logo.svg" alt="Logo" width={88} height={20} />
-        </Link>
+        </div>
 
         {!isHideButton && (
           <Button
