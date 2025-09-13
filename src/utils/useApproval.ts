@@ -1,7 +1,7 @@
 import { CONTRACT_ADDRESSES } from '@/utils/constants'
 import { ERC20_ABI } from '@/utils/contracts'
 import { web3 } from '@/utils/web3'
-import { maxUint256 } from 'viem'
+import { parseUnits } from 'viem'
 import {
   useAccount,
   useReadContract,
@@ -27,12 +27,13 @@ export const useApproval = () => {
   const approveAmount = async (amount: number) => {
     try {
       if (!address) throw new Error('Please connect your wallet')
-      if (allowance && allowance >= amount) return true
+      const parsedAmount = parseUnits(amount.toString(), 6)
+      if (allowance && allowance >= parsedAmount) return true
       const hash = await writeApprove({
         address: CONTRACT_ADDRESSES.USDC,
         abi: ERC20_ABI,
         functionName: 'approve',
-        args: [CONTRACT_ADDRESSES.MAIN, maxUint256],
+        args: [CONTRACT_ADDRESSES.MAIN, parsedAmount],
       })
       if (!hash) throw new Error('Transaction failed')
       const receipt = await web3.waitForTransactionReceipt({ hash })

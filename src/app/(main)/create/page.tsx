@@ -22,7 +22,7 @@ import { useApproval } from '@/utils/useApproval'
 import { useAccount } from 'wagmi'
 import { useRouter } from 'next/navigation'
 import { useQueryClient } from '@tanstack/react-query'
-import { getDaysToReachGoal } from '@/utils/converters'
+import { calculateApprovalAmount, getDaysToReachGoal } from '@/utils/converters'
 
 export default function CreatePage() {
   const { address } = useAccount()
@@ -70,7 +70,11 @@ export default function CreatePage() {
       try {
         setCreating(true)
         // get approval
-        const approved = await approveAmount(selectedContributionAmount!)
+        const approvalAmount = calculateApprovalAmount(
+          selectedBtcTarget,
+          btcPriceValue
+        )
+        const approved = await approveAmount(approvalAmount)
         // if not approved, show error
         if (!approved)
           return addToast({

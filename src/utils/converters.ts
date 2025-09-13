@@ -22,3 +22,11 @@ export const getDaysToReachGoal = (
   if (cadence === 'daily') return numberOfContributions
   return 0
 }
+
+export const calculateApprovalAmount = (
+  btcAmount: number,
+  btcPrice?: number
+) => {
+  if (!btcPrice) btcPrice = DEFAULT_BTC_PRICE
+  return btcAmount * btcPrice * 2
+}
