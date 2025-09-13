@@ -36,6 +36,7 @@ type CreatePlanRequest = {
   planType: 'daily' | 'weekly'
   amount: number // max 2 decimal places
   target: number // max 4 decimal places
+  farcasterId?: string
 }
 
 type CreatePlanResponse = ResponseSuccess<undefined>

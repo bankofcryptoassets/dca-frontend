@@ -23,9 +23,19 @@ import { useAccount } from 'wagmi'
 import { useRouter } from 'next/navigation'
 import { useQueryClient } from '@tanstack/react-query'
 import { calculateApprovalAmount, getDaysToReachGoal } from '@/utils/converters'
+import { useMiniKit } from '@coinbase/onchainkit/minikit'
 
 export default function CreatePage() {
   const { address } = useAccount()
+  const { context } = useMiniKit()
+  const farcasterId = useMemo(
+    () =>
+      context?.client?.clientFid
+        ? context?.client?.clientFid?.toString()
+        : undefined,
+    [context]
+  )
+  console.log('farcasterId', context, context?.client?.clientFid, farcasterId)
   const { data: btcPrice } = useBtcPrice()
   const btcPriceValue = useMemo(
     () => btcPrice?.data?.convertedPrice,
@@ -88,6 +98,7 @@ export default function CreatePage() {
           planType: selectedCadence,
           amount: selectedContributionAmount,
           target: selectedBtcTarget,
+          farcasterId,
         })
         // if not created, show error
         if (!created?.success)
