@@ -29,13 +29,9 @@ export default function CreatePage() {
   const { address } = useAccount()
   const { context } = useMiniKit()
   const farcasterId = useMemo(
-    () =>
-      context?.client?.clientFid
-        ? context?.client?.clientFid?.toString()
-        : undefined,
+    () => (context?.user?.fid ? context?.user?.fid?.toString() : undefined),
     [context]
   )
-  console.log('farcasterId', context, context?.client?.clientFid, farcasterId)
   const { data: btcPrice } = useBtcPrice()
   const btcPriceValue = useMemo(
     () => btcPrice?.data?.convertedPrice,
