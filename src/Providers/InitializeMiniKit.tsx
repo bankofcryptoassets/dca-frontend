@@ -14,7 +14,7 @@ export const InitializeMiniKit = ({
 
   useEffect(() => {
     if (!isFrameReady)
-      setFrameReady({ disableNativeGestures: true }).then(async () => {
+      setFrameReady().then(async () => {
         await sdk.actions.addMiniApp()
         connect({ connector: farcasterMiniApp() })
       })

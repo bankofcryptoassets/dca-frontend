@@ -28,6 +28,7 @@ import { addDays, format } from 'date-fns'
 import { sdk } from '@farcaster/miniapp-sdk'
 import { MINI_APP_URL } from '@/utils/constants'
 import { convertToBTC, getDaysToReachGoal } from '@/utils/converters'
+import { TbSettings } from 'react-icons/tb'
 
 const skipDays = (
   cadence: 'daily' | 'weekly',
@@ -619,6 +620,111 @@ export default function HomePage() {
             <p className="text-center text-sm font-medium">
               Withdraw after 30 Days (No Penalty)
             </p>
+          </div>
+        </div>
+      </GradientBorderCard>
+
+      {/* PLAN CONTROLS */}
+      <GradientBorderCard wrapperClassName="bg-[linear-gradient(180deg,_#FF4038_0%,_rgba(255,_64,_56,_0.1)_100%)]">
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center justify-between gap-2">
+            <CardTitle
+              title="CONTROLS"
+              icon={<TbSettings className="size-4 text-[#FF4038]" />}
+              iconClassName="bg-[linear-gradient(102.3deg,_rgba(255,_255,_255,_0.1)_3.94%,_rgba(255,_255,_255,_0.07)_100%)]"
+            />
+          </div>
+
+          <div className="flex gap-4">
+            <Drawer>
+              <DrawerTrigger asChild>
+                <Button
+                  color="danger"
+                  variant="bordered"
+                  className="w-full border-[#FF4038]/10 bg-[#FF4038]/10 font-medium"
+                >
+                  Withdraw cbBTC
+                </Button>
+              </DrawerTrigger>
+
+              <DrawerContent className="border-[#FF4038]">
+                <DrawerHeader className="px-5 pt-6 pb-0">
+                  <DrawerTitle className="text-xl">Withdraw</DrawerTitle>
+
+                  <Button
+                    color="danger"
+                    size="lg"
+                    className="mt-6 mb-10 border-2 border-[#FF4038] bg-gradient-to-r from-[#FF4038] to-[#B7241E] font-medium"
+                  >
+                    COMING SOON
+                  </Button>
+
+                  {/* <Divider className="my-6 bg-[radial-gradient(50%_23209.76%_at_50%_50%,_#FFFFFF_0%,_rgba(255,_255,_255,_0)_100%)] opacity-20" />
+
+                  <div className="mb-6 flex w-full flex-col items-center gap-2">
+                    <div className="text-foreground/50 text-sm">
+                      You&apos;ll Get
+                    </div>
+                    <div className="flex items-center justify-center gap-2 text-center text-[40px]">
+                      <span>0.09 BTC</span>
+                      <Chip
+                        color="primary"
+                        variant="flat"
+                        className="text-primary text-sm"
+                      >
+                        ~$50
+                      </Chip>
+                    </div>
+                  </div> */}
+                </DrawerHeader>
+
+                {/* <DrawerFooter className="px-5 pt-0 pb-10">
+                  <Button
+                    color="danger"
+                    size="lg"
+                    className="border-2 border-[#FF4038] bg-gradient-to-r from-[#FF4038] to-[#B7241E] font-medium"
+                  >
+                    Withdraw
+                  </Button>
+                </DrawerFooter> */}
+              </DrawerContent>
+            </Drawer>
+
+            <Drawer>
+              <DrawerTrigger asChild>
+                <Button
+                  color="danger"
+                  variant="bordered"
+                  className="w-full border-[#FF4038]/10 bg-[#FF4038]/10 font-medium"
+                >
+                  Cancel Plan
+                </Button>
+              </DrawerTrigger>
+
+              <DrawerContent className="border-[#FF4038]">
+                <DrawerHeader className="px-5 pt-6 pb-0">
+                  <DrawerTitle className="text-xl">Cancel Plan</DrawerTitle>
+
+                  <Button
+                    color="danger"
+                    size="lg"
+                    className="mt-6 mb-10 border-2 border-[#FF4038] bg-gradient-to-r from-[#FF4038] to-[#B7241E] font-medium"
+                  >
+                    COMING SOON
+                  </Button>
+                </DrawerHeader>
+
+                {/* <DrawerFooter className="px-5 pt-0 pb-10">
+                  <Button
+                    color="danger"
+                    size="lg"
+                    className="border-2 border-[#FF4038] bg-gradient-to-r from-[#FF4038] to-[#B7241E] font-medium"
+                  >
+                    Cancel Plan
+                  </Button>
+                </DrawerFooter> */}
+              </DrawerContent>
+            </Drawer>
           </div>
         </div>
       </GradientBorderCard>

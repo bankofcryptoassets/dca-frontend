@@ -24,6 +24,13 @@ import { useRouter } from 'next/navigation'
 import { useQueryClient } from '@tanstack/react-query'
 import { calculateApprovalAmount, getDaysToReachGoal } from '@/utils/converters'
 import { useMiniKit } from '@coinbase/onchainkit/minikit'
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerFooter,
+  DrawerTitle,
+} from '@/components/Drawer'
 
 export default function CreatePage() {
   const { address } = useAccount()
@@ -44,6 +51,13 @@ export default function CreatePage() {
   const queryClient = useQueryClient()
 
   const [step, setStep] = useState<0 | 1 | 2>(0)
+  const [betaDisclaimerOpen, setBetaDisclaimerOpen] = useState(false)
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.scrollTo(0, 0)
+    }
+  }, [step])
 
   const handleNextStep = async () => {
     if (step === 0) {
@@ -57,65 +71,67 @@ export default function CreatePage() {
     }
 
     if (step === 2) {
-      if (!address)
-        return addToast({
-          title: 'Please connect your wallet',
-          color: 'danger',
-        })
-      if (!selectedBtcTarget)
-        return addToast({
-          title: 'Please go back and enter a BTC target',
-          color: 'danger',
-        })
-      if (!selectedContributionAmount)
-        return addToast({
-          title: 'Please go back and enter a contribution amount',
-          color: 'danger',
-        })
+      setBetaDisclaimerOpen(true)
+      return
+      // if (!address)
+      //   return addToast({
+      //     title: 'Please connect your wallet',
+      //     color: 'danger',
+      //   })
+      // if (!selectedBtcTarget)
+      //   return addToast({
+      //     title: 'Please go back and enter a BTC target',
+      //     color: 'danger',
+      //   })
+      // if (!selectedContributionAmount)
+      //   return addToast({
+      //     title: 'Please go back and enter a contribution amount',
+      //     color: 'danger',
+      //   })
 
-      try {
-        setCreating(true)
-        // get approval
-        const approvalAmount = calculateApprovalAmount(
-          selectedBtcTarget,
-          btcPriceValue
-        )
-        const approved = await approveAmount(approvalAmount)
-        // if not approved, show error
-        if (!approved)
-          return addToast({
-            title: 'Transaction failed',
-            description: 'Please try again later or contact support',
-            color: 'danger',
-          })
-        // if approved, create plan
-        const created = await createPlan({
-          wallet: address,
-          planType: selectedCadence,
-          amount: selectedContributionAmount,
-          target: selectedBtcTarget,
-          farcasterId,
-        })
-        // if not created, show error
-        if (!created?.success)
-          return addToast({
-            title: 'Plan creation failed',
-            description: 'Please try again later or contact support',
-            color: 'danger',
-          })
-        // if created, show success and redirect to home
-        addToast({ title: 'Plan created successfully', color: 'success' })
-        queryClient.invalidateQueries({ queryKey: ['plan'] })
-        return router.push('/home')
-      } catch {
-        return addToast({
-          title: 'Create plan failed',
-          description: 'Please try again later or contact support',
-          color: 'danger',
-        })
-      } finally {
-        setCreating(false)
-      }
+      // try {
+      //   setCreating(true)
+      //   // get approval
+      //   const approvalAmount = calculateApprovalAmount(
+      //     selectedBtcTarget,
+      //     btcPriceValue
+      //   )
+      //   const approved = await approveAmount(approvalAmount)
+      //   // if not approved, show error
+      //   if (!approved)
+      //     return addToast({
+      //       title: 'Transaction failed',
+      //       description: 'Please try again later or contact support',
+      //       color: 'danger',
+      //     })
+      //   // if approved, create plan
+      //   const created = await createPlan({
+      //     wallet: address,
+      //     planType: selectedCadence,
+      //     amount: selectedContributionAmount,
+      //     target: selectedBtcTarget,
+      //     farcasterId,
+      //   })
+      //   // if not created, show error
+      //   if (!created?.success)
+      //     return addToast({
+      //       title: 'Plan creation failed',
+      //       description: 'Please try again later or contact support',
+      //       color: 'danger',
+      //     })
+      //   // if created, show success and redirect to home
+      //   addToast({ title: 'Plan created successfully', color: 'success' })
+      //   queryClient.invalidateQueries({ queryKey: ['plan'] })
+      //   return router.push('/home')
+      // } catch {
+      //   return addToast({
+      //     title: 'Create plan failed',
+      //     description: 'Please try again later or contact support',
+      //     color: 'danger',
+      //   })
+      // } finally {
+      //   setCreating(false)
+      // }
     }
 
     setStep((prev) => (prev === 0 ? 1 : prev === 1 ? 2 : 2))
@@ -124,12 +140,6 @@ export default function CreatePage() {
   const handleBackStep = () => {
     setStep((prev) => (prev === 0 ? 0 : prev === 1 ? 0 : 1))
   }
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      window.scrollTo(0, 0)
-    }
-  }, [step])
 
   const [selectedCadence, setSelectedCadence] = useState<'daily' | 'weekly'>(
     'daily'
@@ -163,6 +173,65 @@ export default function CreatePage() {
   //     return [...prev, token]
   //   })
   // }
+
+  const handleCreatePlan = async () => {
+    if (!address)
+      return addToast({ title: 'Please connect your wallet', color: 'danger' })
+    if (!selectedBtcTarget)
+      return addToast({
+        title: 'Please go back and enter a BTC target',
+        color: 'danger',
+      })
+    if (!selectedContributionAmount)
+      return addToast({
+        title: 'Please go back and enter a contribution amount',
+        color: 'danger',
+      })
+
+    try {
+      setCreating(true)
+      // get approval
+      const approvalAmount = calculateApprovalAmount(
+        selectedBtcTarget,
+        btcPriceValue
+      )
+      const approved = await approveAmount(approvalAmount)
+      // if not approved, show error
+      if (!approved)
+        return addToast({
+          title: 'Transaction failed',
+          description: 'Please try again later or contact support',
+          color: 'danger',
+        })
+      // if approved, create plan
+      const created = await createPlan({
+        wallet: address,
+        planType: selectedCadence,
+        amount: selectedContributionAmount,
+        target: selectedBtcTarget,
+        farcasterId,
+      })
+      // if not created, show error
+      if (!created?.success)
+        return addToast({
+          title: 'Plan creation failed',
+          description: 'Please try again later or contact support',
+          color: 'danger',
+        })
+      // if created, show success and redirect to home
+      addToast({ title: 'Plan created successfully', color: 'success' })
+      queryClient.invalidateQueries({ queryKey: ['plan'] })
+      return router.push('/home')
+    } catch {
+      return addToast({
+        title: 'Create plan failed',
+        description: 'Please try again later or contact support',
+        color: 'danger',
+      })
+    } finally {
+      setCreating(false)
+    }
+  }
 
   return (
     <div className="space-y-10">
@@ -268,7 +337,7 @@ export default function CreatePage() {
                   }
                 >
                   <Tab key="daily" title="Daily" />
-                  <Tab key="weekly" title="Weekly" />
+                  {/* <Tab key="weekly" title="Weekly" isDisabled /> */}
                 </Tabs>
               </div>
 
@@ -339,7 +408,8 @@ export default function CreatePage() {
               <div className="flex flex-col gap-2.5">
                 <label className="text-sm">Choose Tokens to Convert</label>
                 <div className="flex flex-wrap gap-1">
-                  {['USDC', 'ETH', 'ZORA', 'WETH'].map((token) => (
+                  {/* {['USDC', 'ETH', 'ZORA', 'WETH'].map((token) => ( */}
+                  {['USDC'].map((token) => (
                     <Tooltip
                       key={token}
                       // TODO: Coming Soon
@@ -598,6 +668,37 @@ export default function CreatePage() {
             {BUTTON_TITLES[step]}
           </Button>
         </div>
+
+        <Drawer open={betaDisclaimerOpen} onOpenChange={setBetaDisclaimerOpen}>
+          <DrawerContent>
+            <DrawerHeader className="px-5 pt-6 pb-0">
+              <DrawerTitle className="text-xl">
+                This app is still in Beta
+              </DrawerTitle>
+              <div className="flex flex-col items-center">
+                <div className="text-foreground/50 mt-4 text-center text-base">
+                  Please deposit funds at your own risk
+                </div>
+              </div>
+
+              <Divider className="my-8 bg-[radial-gradient(50%_23209.76%_at_50%_50%,_#FFFFFF_0%,_rgba(255,_255,_255,_0)_100%)] opacity-20" />
+            </DrawerHeader>
+
+            <DrawerFooter className="px-5 pt-0 pb-10">
+              <Button
+                color="primary"
+                size="lg"
+                className="border-2 border-[#F6921A] bg-gradient-to-r from-[#F7931A] to-[#C46200] font-medium"
+                onPress={() => {
+                  setBetaDisclaimerOpen(false)
+                  handleCreatePlan()
+                }}
+              >
+                I Understand, Continue
+              </Button>
+            </DrawerFooter>
+          </DrawerContent>
+        </Drawer>
 
         {step !== 0 && (
           <Button

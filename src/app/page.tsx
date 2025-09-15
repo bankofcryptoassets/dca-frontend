@@ -1,95 +1,123 @@
 'use client'
-import { addToast, Button, cn } from '@heroui/react'
+import {
+  // addToast,
+  Button,
+  cn,
+} from '@heroui/react'
 import Image from 'next/image'
-// import { useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import InlineSVG from 'react-inlinesvg'
 import { useMiniKit } from '@coinbase/onchainkit/minikit'
 import { sdk } from '@farcaster/miniapp-sdk'
-import confetti from 'canvas-confetti'
-import SlotCounter from 'react-slot-counter'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { MINI_APP_URL } from '@/utils/constants'
+// import confetti from 'canvas-confetti'
+// import SlotCounter from 'react-slot-counter'
+// import { useQuery, useQueryClient } from '@tanstack/react-query'
+// import { MINI_APP_URL } from '@/utils/constants'
+import { useAccount, useConnect } from 'wagmi'
+import { farcasterMiniApp } from '@farcaster/miniapp-wagmi-connector'
+import { metaMask } from 'wagmi/connectors'
 
 export default function Home() {
-  // const router = useRouter()
+  const router = useRouter()
   const { context } = useMiniKit()
-  const queryClient = useQueryClient()
+  // const queryClient = useQueryClient()
+  const { connect } = useConnect()
+  const { isConnected } = useAccount()
 
-  const { data: waitlistCount } = useQuery({
-    queryKey: ['waitlist-count'],
-    queryFn: () => fetch('/api/waitlist/count').then((res) => res.json()),
-  })
-
-  const { data: waitlistExists } = useQuery({
-    queryKey: ['waitlist-exists', context?.user?.fid],
-    queryFn: () =>
-      fetch('/api/waitlist/exists', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fid: context?.user?.fid }),
-      }).then((res) => res.json()),
-    enabled: !!context?.user?.fid,
-  })
-
-  const isWaitlistJoined = waitlistExists?.exists
-
-  const handleSuccess = (alreadyJoined = false) => {
-    confetti({ particleCount: 100, spread: 70, origin: { y: 1 } })
-    queryClient.invalidateQueries({ queryKey: ['waitlist-exists'] })
-    queryClient.invalidateQueries({ queryKey: ['waitlist-count'] })
-    addToast({
-      title: alreadyJoined
-        ? 'You are already in the waitlist'
-        : 'Successfully Joined the Waitlist',
-      color: 'success',
-    })
-    sdk.haptics.notificationOccurred('success')
-  }
-
-  const handleSubmit = async () => {
-    // for testing only
-    // handleSuccess()
-    // return
-
-    if (!context?.user?.fid) {
-      addToast({
-        title: 'Something went wrong',
-        description: 'Please try again later',
-        color: 'danger',
-      })
+  const handleContinue = () => {
+    if (isConnected) {
+      sdk.haptics.impactOccurred('soft')
+      router.push('/create')
       return
     }
-
-    try {
-      const waitlistRes = await fetch('/api/waitlist', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fid: context.user.fid }),
-      })
-
-      if (!waitlistRes.ok) {
-        if (waitlistRes.status === 409) {
-          handleSuccess(true)
-          return
-        }
-        throw new Error('Failed to join waitlist')
+    connect(
+      {
+        connector: context?.client?.clientFid ? farcasterMiniApp() : metaMask(),
+      },
+      {
+        onSettled: () => {
+          router.push('/create')
+          sdk.haptics.impactOccurred('soft')
+        },
       }
-
-      handleSuccess()
-
-      await sdk.actions.composeCast({
-        text: "I'll be stacking Bitcoin daily with Bitmor. I've joined the waitlist and locked my chance at the Private Token Round. Only 500 seats, be early.",
-        embeds: [MINI_APP_URL],
-      })
-    } catch (error) {
-      console.error('Error:', error)
-      addToast({
-        title: 'Failed to join waitlist',
-        description: 'Please try again later',
-        color: 'danger',
-      })
-    }
+    )
   }
+
+  // const { data: waitlistCount } = useQuery({
+  //   queryKey: ['waitlist-count'],
+  //   queryFn: () => fetch('/api/waitlist/count').then((res) => res.json()),
+  // })
+
+  // const { data: waitlistExists } = useQuery({
+  //   queryKey: ['waitlist-exists', context?.user?.fid],
+  //   queryFn: () =>
+  //     fetch('/api/waitlist/exists', {
+  //       method: 'POST',
+  //       headers: { 'Content-Type': 'application/json' },
+  //       body: JSON.stringify({ fid: context?.user?.fid }),
+  //     }).then((res) => res.json()),
+  //   enabled: !!context?.user?.fid,
+  // })
+
+  // const isWaitlistJoined = waitlistExists?.exists
+
+  // const handleSuccess = (alreadyJoined = false) => {
+  //   confetti({ particleCount: 100, spread: 70, origin: { y: 1 } })
+  //   queryClient.invalidateQueries({ queryKey: ['waitlist-exists'] })
+  //   queryClient.invalidateQueries({ queryKey: ['waitlist-count'] })
+  //   addToast({
+  //     title: alreadyJoined
+  //       ? 'You are already in the waitlist'
+  //       : 'Successfully Joined the Waitlist',
+  //     color: 'success',
+  //   })
+  //   sdk.haptics.notificationOccurred('success')
+  // }
+
+  // const handleSubmit = async () => {
+  //   // for testing only
+  //   // handleSuccess()
+  //   // return
+
+  //   if (!context?.user?.fid) {
+  //     addToast({
+  //       title: 'Something went wrong',
+  //       description: 'Please try again later',
+  //       color: 'danger',
+  //     })
+  //     return
+  //   }
+
+  //   try {
+  //     const waitlistRes = await fetch('/api/waitlist', {
+  //       method: 'POST',
+  //       headers: { 'Content-Type': 'application/json' },
+  //       body: JSON.stringify({ fid: context.user.fid }),
+  //     })
+
+  //     if (!waitlistRes.ok) {
+  //       if (waitlistRes.status === 409) {
+  //         handleSuccess(true)
+  //         return
+  //       }
+  //       throw new Error('Failed to join waitlist')
+  //     }
+
+  //     handleSuccess()
+
+  //     await sdk.actions.composeCast({
+  //       text: "I'll be stacking Bitcoin daily with Bitmor. I've joined the waitlist and locked my chance at the Private Token Round. Only 500 seats, be early.",
+  //       embeds: [MINI_APP_URL],
+  //     })
+  //   } catch (error) {
+  //     console.error('Error:', error)
+  //     addToast({
+  //       title: 'Failed to join waitlist',
+  //       description: 'Please try again later',
+  //       color: 'danger',
+  //     })
+  //   }
+  // }
 
   return (
     <div className="bg-background relative grid min-h-screen items-end justify-items-end">
@@ -118,14 +146,14 @@ export default function Home() {
 
           <p
             className={cn(
-              'text-foreground/50 h-6 text-center text-base transition-[height,opacity] duration-300',
-              isWaitlistJoined && 'h-0 opacity-0'
+              'text-foreground/50 h-6 text-center text-base transition-[height,opacity] duration-300'
+              // isWaitlistJoined && 'h-0 opacity-0'
             )}
           >
             Protect What You&apos;ve Earned, Forever.
           </p>
 
-          <div className="flex flex-col gap-2">
+          {/* <div className="flex flex-col gap-2">
             <div
               className={cn(
                 'h-0 space-y-2 opacity-0 transition-[height,opacity] duration-500',
@@ -155,18 +183,16 @@ export default function Home() {
               </span>
               <span className="text-sm">People Joined</span>
             </div>
-          </div>
+          </div> */}
         </div>
 
-        <Button
+        {/* <Button
           color="primary"
           variant="shadow"
           fullWidth
           size="lg"
           className="border-2 border-[#F6921A] bg-gradient-to-r from-[#F7931A] to-[#C46200] font-medium"
           onPress={() => {
-            // router.push('/create')
-
             if (isWaitlistJoined) {
               sdk.haptics.notificationOccurred('success')
               return
@@ -180,7 +206,17 @@ export default function Home() {
           }
         >
           {isWaitlistJoined ? 'Waitlist Joined' : 'Join the Waitlist'}
-          {/* Plan Your Bitcoin Treasury */}
+        </Button> */}
+
+        <Button
+          color="primary"
+          variant="shadow"
+          fullWidth
+          size="lg"
+          className="border-2 border-[#F6921A] bg-gradient-to-r from-[#F7931A] to-[#C46200] font-medium"
+          onPress={handleContinue}
+        >
+          Plan Your Bitcoin Treasury
         </Button>
       </main>
     </div>

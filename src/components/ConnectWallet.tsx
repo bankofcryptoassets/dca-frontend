@@ -40,7 +40,7 @@ export const ConnectWallet = () => {
               className="w-full border-2 border-[#F6921A] bg-gradient-to-r from-[#F7931A] to-[#C46200] font-medium"
               onPress={() => {
                 connect({
-                  connector: context?.user?.fid
+                  connector: context?.client?.clientFid
                     ? farcasterMiniApp()
                     : metaMask(),
                 })
