@@ -2,6 +2,7 @@
 import { CardTitle } from '@/components/CardTitle'
 import GradientBorderCard from '@/components/GradientBorderCard'
 import {
+  addToast,
   Button,
   Chip,
   cn,
@@ -21,13 +22,18 @@ import {
   DrawerTrigger,
 } from '@/components/Drawer'
 import { useBtcPrice, useGetPlan } from '@/utils/api'
-import { useAccount } from 'wagmi'
-import { useMemo } from 'react'
+import { useAccount, useWriteContract } from 'wagmi'
+import { useMemo, useState } from 'react'
 import { addDays, format } from 'date-fns'
 import { sdk } from '@farcaster/miniapp-sdk'
-import { MINI_APP_URL } from '@/utils/constants'
+import { CONTRACT_ADDRESSES, MINI_APP_URL } from '@/utils/constants'
 import { convertToBTC, getDaysToReachGoal } from '@/utils/converters'
 import { TbSettings } from 'react-icons/tb'
+import { useBTCBalance } from '@/hooks/useBTCBalance'
+import { formatUnits } from 'viem'
+import { MAIN_ABI } from '@/utils/contracts'
+import { web3 } from '@/utils/web3'
+import { useQueryClient } from '@tanstack/react-query'
 
 const skipDays = (
   cadence: 'daily' | 'weekly',
@@ -40,9 +46,20 @@ const skipDays = (
 }
 
 export default function HomePage() {
+  const queryClient = useQueryClient()
   const { address } = useAccount()
   const { data: plan } = useGetPlan(address!, { enabled: !!address })
   const { data: btcPrice } = useBtcPrice()
+  const { data: btcBalance } = useBTCBalance()
+  const btcBalanceValue = useMemo(() => {
+    const formatted = formatUnits(btcBalance ?? BigInt(0), 8)
+    const value = Number.parseFloat(formatted)
+    const usdValue = value * (btcPrice?.data?.convertedPrice ?? 0)
+    const formattedUsdValue = usdValue.toFixed(2)
+    return { formatted, value, formattedUsdValue }
+  }, [btcBalance, btcPrice])
+
+  const { writeContractAsync: withdrawCBBTC } = useWriteContract()
 
   const totalInvested = useMemo(() => {
     const inUsd =
@@ -77,42 +94,63 @@ export default function HomePage() {
   }, [daysRemaining, daysToReachGoal])
 
   const nextBtcPurchases = useMemo(() => {
+    const scheduledDate = (skip: number) => {
+      const skippedDays = skipDays(
+        plan?.data?.plan ?? 'daily',
+        plan?.data?.payments?.length ?? 0,
+        skip
+      )
+      const date = addDays(
+        new Date(plan?.data?.planCreated ?? ''),
+        // we need to skip days for the added payments
+        skippedDays
+      )
+      // TODO: if date is in the past, return today
+      return date
+    }
+
     return [
       {
-        date: format(
-          addDays(
-            new Date(plan?.data?.planCreated ?? ''),
-            // we need to skip days for the added payments
-            skipDays(
-              plan?.data?.plan ?? 'daily',
-              plan?.data?.payments?.length ?? 0,
-              0
-            )
-          ),
-          'do MMM, yyyy'
-        ),
+        date: format(scheduledDate(0), 'do MMM, yyyy'),
         cadence: plan?.data?.plan,
         amount: plan?.data?.amount,
         covered: false,
       },
       {
-        date: format(
-          addDays(
-            new Date(plan?.data?.planCreated ?? ''),
-            skipDays(
-              plan?.data?.plan ?? 'daily',
-              plan?.data?.payments?.length ?? 0,
-              1
-            )
-          ),
-          'do MMM, yyyy'
-        ),
+        date: format(scheduledDate(1), 'do MMM, yyyy'),
         cadence: plan?.data?.plan,
         amount: plan?.data?.amount,
         covered: false,
       },
     ]
   }, [plan])
+
+  const [withdrawing, setWithdrawing] = useState(false)
+  const handleWithdrawCBBTC = async () => {
+    if (!address) return
+    if (btcBalanceValue.value <= 0) return
+    try {
+      setWithdrawing(true)
+      const hash = await withdrawCBBTC({
+        address: CONTRACT_ADDRESSES.MAIN,
+        abi: MAIN_ABI,
+        functionName: 'withdrawCBBTC',
+      })
+      if (!hash) throw new Error('Transaction failed')
+      const receipt = await web3.waitForTransactionReceipt({ hash })
+      if (receipt?.status !== 'success') throw new Error('Transaction failed')
+      queryClient.invalidateQueries({ queryKey: ['btcBalance'] })
+      addToast({ title: 'Withdrawal successful', color: 'success' })
+    } catch {
+      return addToast({
+        title: 'Withdrawal failed',
+        description: 'Please try again later or contact support',
+        color: 'danger',
+      })
+    } finally {
+      setWithdrawing(false)
+    }
+  }
 
   return (
     <div className="space-y-3">
@@ -648,44 +686,39 @@ export default function HomePage() {
 
               <DrawerContent className="border-[#FF4038]">
                 <DrawerHeader className="px-5 pt-6 pb-0">
-                  <DrawerTitle className="text-xl">Withdraw</DrawerTitle>
+                  <DrawerTitle className="text-xl">Withdraw cbBTC</DrawerTitle>
 
-                  <Button
-                    color="danger"
-                    size="lg"
-                    className="mt-6 mb-10 border-2 border-[#FF4038] bg-gradient-to-r from-[#FF4038] to-[#B7241E] font-medium"
-                  >
-                    COMING SOON
-                  </Button>
-
-                  {/* <Divider className="my-6 bg-[radial-gradient(50%_23209.76%_at_50%_50%,_#FFFFFF_0%,_rgba(255,_255,_255,_0)_100%)] opacity-20" />
+                  <Divider className="my-6 bg-[radial-gradient(50%_23209.76%_at_50%_50%,_#FFFFFF_0%,_rgba(255,_255,_255,_0)_100%)] opacity-20" />
 
                   <div className="mb-6 flex w-full flex-col items-center gap-2">
                     <div className="text-foreground/50 text-sm">
                       You&apos;ll Get
                     </div>
-                    <div className="flex items-center justify-center gap-2 text-center text-[40px]">
-                      <span>0.09 BTC</span>
+                    <div className="flex flex-wrap items-center justify-center gap-2 text-center text-3xl">
+                      <span>{btcBalanceValue.formatted} cbBTC</span>
                       <Chip
                         color="primary"
                         variant="flat"
                         className="text-primary text-sm"
                       >
-                        ~$50
+                        ~${btcBalanceValue.formattedUsdValue}
                       </Chip>
                     </div>
-                  </div> */}
+                  </div>
                 </DrawerHeader>
 
-                {/* <DrawerFooter className="px-5 pt-0 pb-10">
+                <DrawerFooter className="px-5 pt-0 pb-10">
                   <Button
                     color="danger"
                     size="lg"
                     className="border-2 border-[#FF4038] bg-gradient-to-r from-[#FF4038] to-[#B7241E] font-medium"
+                    isDisabled={btcBalanceValue.value <= 0}
+                    isLoading={withdrawing}
+                    onPress={handleWithdrawCBBTC}
                   >
                     Withdraw
                   </Button>
-                </DrawerFooter> */}
+                </DrawerFooter>
               </DrawerContent>
             </Drawer>
 
