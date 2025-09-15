@@ -11,7 +11,7 @@ import {
   Tooltip,
 } from '@heroui/react'
 import InlineSVG from 'react-inlinesvg'
-import { FaCheck, FaFlag, FaShareNodes } from 'react-icons/fa6'
+import { FaShareNodes } from 'react-icons/fa6'
 import {
   Drawer,
   DrawerContent,
@@ -20,7 +20,6 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from '@/components/Drawer'
-import Image from 'next/image'
 import { useBtcPrice, useGetPlan } from '@/utils/api'
 import { useAccount } from 'wagmi'
 import { useMemo } from 'react'
@@ -242,6 +241,7 @@ export default function HomePage() {
                     embeds: [MINI_APP_URL],
                   })
                 }}
+                isDisabled
               >
                 Share
               </Button>
@@ -366,8 +366,9 @@ export default function HomePage() {
         </div>
       </GradientBorderCard>
 
+      {/** TODO: Coming Soon */}
       {/* REWARDS EARNED */}
-      <GradientBorderCard
+      {/* <GradientBorderCard
         wrapperClassName="relative bg-[linear-gradient(180deg,_rgba(247,_147,_26,_0.192157)_14.78%,_#F7931A_92.41%)] "
         className="z-1 shadow-[0px_-22px_32.4px_0px_#F7931A_inset]"
       >
@@ -386,12 +387,11 @@ export default function HomePage() {
               icon={<InlineSVG src="/icons/gift.svg" className="size-4" />}
             />
 
-            {/** TODO: Coming Soon */}
             <Chip size="sm" color="primary" variant="shadow">
               Coming Soon
             </Chip>
 
-            {/* <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2">
               <Button
                 color="primary"
                 size="sm"
@@ -416,10 +416,9 @@ export default function HomePage() {
               >
                 2x
               </Button>
-            </div> */}
+            </div>
           </div>
 
-          {/** TODO: Coming Soon */}
           <div className="pointer-events-none flex flex-col gap-3 blur-xs select-none">
             <div className="text-[28px] leading-tight">0.02 BTC</div>
 
@@ -455,7 +454,7 @@ export default function HomePage() {
             </div>
           </div>
         </div>
-      </GradientBorderCard>
+      </GradientBorderCard> */}
 
       <Divider className="my-4 bg-[radial-gradient(50%_23209.76%_at_50%_50%,_#FFFFFF_0%,_rgba(255,_255,_255,_0)_100%)] opacity-20" />
 
@@ -493,8 +492,9 @@ export default function HomePage() {
 
       <Divider className="my-4 bg-[radial-gradient(50%_23209.76%_at_50%_50%,_#FFFFFF_0%,_rgba(255,_255,_255,_0)_100%)] opacity-20" />
 
+      {/** TODO: Coming Soon */}
       {/* RISK MANAGEMENT */}
-      <GradientBorderCard wrapperClassName="bg-[linear-gradient(180deg,_#FF4038_0%,_rgba(255,_64,_56,_0.1)_100%)]">
+      {/* <GradientBorderCard wrapperClassName="bg-[linear-gradient(180deg,_#FF4038_0%,_rgba(255,_64,_56,_0.1)_100%)]">
         <div className="flex flex-col gap-4">
           <div className="flex items-center justify-between gap-2">
             <CardTitle
@@ -513,7 +513,6 @@ export default function HomePage() {
             </Chip>
           </div>
 
-          {/** TODO: Coming Soon */}
           <div className="pointer-events-none flex flex-col gap-4 blur-xs select-none">
             <div className="flex items-center justify-between gap-2 text-sm">
               <div className="text-foreground/50">Withdrawal Delay:</div>
@@ -622,7 +621,7 @@ export default function HomePage() {
             </p>
           </div>
         </div>
-      </GradientBorderCard>
+      </GradientBorderCard> */}
 
       {/* PLAN CONTROLS */}
       <GradientBorderCard wrapperClassName="bg-[linear-gradient(180deg,_#FF4038_0%,_rgba(255,_64,_56,_0.1)_100%)]">

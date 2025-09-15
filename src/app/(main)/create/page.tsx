@@ -8,7 +8,6 @@ import {
   cn,
   Divider,
   NumberInput,
-  Slider,
   Tab,
   Tabs,
   Tooltip,
@@ -16,7 +15,6 @@ import {
 import Image from 'next/image'
 import { useEffect, useMemo, useState } from 'react'
 import InlineSVG from 'react-inlinesvg'
-import { IoIosInformationCircle } from 'react-icons/io'
 import { useBtcPrice, useCreatePlan } from '@/utils/api'
 import { useApproval } from '@/utils/useApproval'
 import { useAccount } from 'wagmi'
@@ -50,7 +48,7 @@ export default function CreatePage() {
   const router = useRouter()
   const queryClient = useQueryClient()
 
-  const [step, setStep] = useState<0 | 1 | 2>(0)
+  const [step, setStep] = useState<0 | 1>(0)
   const [betaDisclaimerOpen, setBetaDisclaimerOpen] = useState(false)
 
   useEffect(() => {
@@ -70,7 +68,8 @@ export default function CreatePage() {
         })
     }
 
-    if (step === 2) {
+    // if (step === 2) {
+    if (step === 1) {
       setBetaDisclaimerOpen(true)
       return
       // if (!address)
@@ -134,7 +133,7 @@ export default function CreatePage() {
       // }
     }
 
-    setStep((prev) => (prev === 0 ? 1 : prev === 1 ? 2 : 2))
+    setStep((prev) => (prev === 0 ? 1 : prev === 1 ? 1 : 1))
   }
 
   const handleBackStep = () => {
@@ -146,7 +145,7 @@ export default function CreatePage() {
   )
   // const [selectedTokens, setSelectedTokens] = useState<string[]>(['USDC'])
   const [selectedTokens] = useState<string[]>(['USDC'])
-  const [exitFee, setExitFee] = useState(2)
+  // const [exitFee, setExitFee] = useState(2)
   const [selectedBtcTarget, setSelectedBtcTarget] = useState<number>()
   const [selectedContributionAmount, setSelectedContributionAmount] =
     useState<number>()
@@ -245,7 +244,9 @@ export default function CreatePage() {
       />
 
       <div className="mt-5 grid place-items-center">
-        <HeroBitcoinAnimation playReverse={step === 1} />
+        <HeroBitcoinAnimation
+        // playReverse={step === 1}
+        />
       </div>
 
       <div className="mt-10 flex w-full flex-col items-center gap-6">
@@ -436,7 +437,8 @@ export default function CreatePage() {
                 </div>
               </div>
 
-              <div className="flex w-full items-center justify-between gap-2">
+              {/** TODO: Coming Soon */}
+              {/* <div className="flex w-full items-center justify-between gap-2">
                 <label
                   htmlFor="convert-dust-tokens"
                   className="text-foreground/75 text-sm"
@@ -444,7 +446,6 @@ export default function CreatePage() {
                   Auto-convert small balances to BTC (set limit)
                 </label>
 
-                {/** TODO: Coming Soon */}
                 <Tooltip content="Coming Soon" color="primary">
                   <div>
                     <NumberInput
@@ -468,13 +469,13 @@ export default function CreatePage() {
                     />
                   </div>
                 </Tooltip>
-              </div>
+              </div> */}
             </div>
           )}
 
-          {step === 1 && (
+          {/** TODO: Coming Soon */}
+          {/* {step === 1 && (
             <>
-              {/** TODO: Coming Soon */}
               <div className="pointer-events-none absolute top-0 right-0 bottom-0 left-0 z-10 flex cursor-not-allowed items-center justify-center select-none">
                 <Button
                   color="primary"
@@ -521,8 +522,6 @@ export default function CreatePage() {
                   <InlineSVG src="/extras/airdrop.svg" />
                   <span>Pledgers will be eligible for our future airdrops</span>
                 </GradientBorderCard>
-
-                {/* <Divider className="bg-[radial-gradient(50%_23209.76%_at_50%_50%,_#FFFFFF_0%,_rgba(255,_255,_255,_0)_100%)] opacity-20" /> */}
 
                 <div className="flex flex-col gap-4">
                   <label
@@ -587,9 +586,10 @@ export default function CreatePage() {
                 </div>
               </div>
             </>
-          )}
+          )} */}
 
-          {step === 2 && (
+          {/* {step === 2 && ( */}
+          {step === 1 && (
             <div className="my-4 flex flex-col gap-5 text-sm">
               <div className="flex items-center justify-between">
                 <div className="text-foreground/50">BTC Target</div>
@@ -650,11 +650,11 @@ export default function CreatePage() {
             size="lg"
             variant="shadow"
             className={cn(
-              'w-full border-2 border-[#F6921A] bg-gradient-to-r from-[#F7931A] to-[#C46200] font-medium',
-              step === 1 && 'text-sm'
+              'w-full border-2 border-[#F6921A] bg-gradient-to-r from-[#F7931A] to-[#C46200] font-medium'
+              // step === 1 && 'text-sm'
             )}
             endContent={
-              step === 2 ? (
+              step === 1 ? (
                 <InlineSVG src="/icons/check.svg" />
               ) : (
                 <InlineSVG
@@ -713,7 +713,8 @@ export default function CreatePage() {
         )}
 
         <div className="flex items-center gap-3">
-          {[0, 1, 2].map((item) => (
+          {/* {[0, 1, 2].map((item) => ( */}
+          {[0, 1].map((item) => (
             <div
               key={item}
               className={cn(
@@ -728,16 +729,20 @@ export default function CreatePage() {
   )
 }
 
-const TITLES = ['Create Plan', 'Set Pledge', 'Review Plan']
+const TITLES = [
+  'Create Plan',
+  // 'Set Pledge',
+  'Review Plan',
+]
 const SUBTITLES = [
   'Start Your Bitcoin Ownership Journey',
-  'Commit to your target and earn rewards.',
+  // 'Commit to your target and earn rewards.',
   '',
 ]
 const BUTTON_TITLES = [
   'Continue',
   // 'Confirm Pledge', // TODO: Coming Soon
-  'Continue',
+  // 'Continue',
   'Start My BTC Ownership Journey',
 ]
 const PREDEFINED_BTC_TARGETS = [
