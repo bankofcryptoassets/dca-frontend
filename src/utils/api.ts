@@ -29,6 +29,7 @@ type GetPlanResponse = ResponseSuccess<{
   payments: string[]
   createdAt: string
   updatedAt: string
+  paused: boolean
 }>
 
 type CreatePlanRequest = {
@@ -41,6 +42,10 @@ type CreatePlanRequest = {
 
 type CreatePlanResponse = ResponseSuccess<undefined>
 
+type PausePlanRequest = { wallet: string; unpause?: boolean }
+
+type PausePlanResponse = ResponseSuccess<undefined>
+
 type BtcPriceResponse = ResponseSuccess<{ convertedPrice: number }>
 
 const api = {
@@ -51,6 +56,8 @@ const api = {
       ?.then((res) => res.data),
   createPlan: (data: CreatePlanRequest) =>
     apiClient.post('/plan/createPlan', data).then((res) => res.data),
+  pausePlan: (data: PausePlanRequest) =>
+    apiClient.patch('/plan/cancelPlan', data).then((res) => res.data),
 
   // Misc
   btcPrice: () =>
@@ -83,6 +90,20 @@ export const useCreatePlan = (
     AxiosError<ResponseError>,
     CreatePlanRequest
   >({ mutationFn: (data) => api.createPlan(data), ...options })
+}
+
+export const usePausePlan = (
+  options?: UseMutationOptions<
+    PausePlanResponse,
+    AxiosError<ResponseError>,
+    PausePlanRequest
+  >
+) => {
+  return useMutation<
+    PausePlanResponse,
+    AxiosError<ResponseError>,
+    PausePlanRequest
+  >({ mutationFn: (data) => api.pausePlan(data), ...options })
 }
 
 export const useBtcPrice = (

@@ -21,7 +21,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from '@/components/Drawer'
-import { useBtcPrice, useGetPlan } from '@/utils/api'
+import { useBtcPrice, useGetPlan, usePausePlan } from '@/utils/api'
 import { useAccount, useWriteContract } from 'wagmi'
 import { useMemo, useState } from 'react'
 import { addDays, format } from 'date-fns'
@@ -88,8 +88,12 @@ export default function HomePage() {
   }, [daysToReachGoal, plan])
 
   const completedPercentage = useMemo(() => {
-    return Number.parseInt(
-      (((daysToReachGoal - daysRemaining) / daysToReachGoal) * 100)?.toFixed(0)
+    return (
+      Number.parseInt(
+        (((daysToReachGoal - daysRemaining) / daysToReachGoal) * 100)?.toFixed(
+          0
+        )
+      ) || 0
     )
   }, [daysRemaining, daysToReachGoal])
 
@@ -125,6 +129,7 @@ export default function HomePage() {
     ]
   }, [plan])
 
+  /** WITHDRAW CBBTC */
   const [withdrawing, setWithdrawing] = useState(false)
   const handleWithdrawCBBTC = async () => {
     if (!address) return
@@ -150,6 +155,41 @@ export default function HomePage() {
     } finally {
       setWithdrawing(false)
     }
+  }
+
+  /** PAUSE PLAN */
+  const [isPauseOpen, setIsPauseOpen] = useState(false)
+  const isPlanPaused = useMemo(() => {
+    return plan?.data?.paused ?? false
+  }, [plan])
+
+  const { mutate: pausePlan, isPending: pausing } = usePausePlan()
+
+  const handlePausePlan = async (paused: boolean) => {
+    if (!address) return
+    pausePlan(
+      { wallet: address, ...(paused ? { unpause: true } : {}) },
+      {
+        onSuccess: (data) => {
+          if (!data?.success) throw Error('failed')
+          queryClient.invalidateQueries({ queryKey: ['plan'] })
+          addToast({
+            title: paused
+              ? 'Plan unpaused successfully'
+              : 'Plan paused successfully',
+            color: 'success',
+          })
+          queryClient.invalidateQueries({ queryKey: ['plan'] })
+          setIsPauseOpen(false)
+        },
+        onError: () => {
+          addToast({
+            title: paused ? 'Plan unpause failed' : 'Plan pause failed',
+            color: 'danger',
+          })
+        },
+      }
+    )
   }
 
   return (
@@ -367,9 +407,24 @@ export default function HomePage() {
             </Drawer>
           </div>
 
-          <div className="flex flex-col gap-3.5 text-sm">
+          <div className="relative flex flex-col gap-3.5 text-sm">
+            {isPlanPaused && (
+              <Chip
+                color="primary"
+                variant="shadow"
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+              >
+                Plan Paused
+              </Chip>
+            )}
             {nextBtcPurchases.map((purchase) => (
-              <div className="flex flex-col gap-1" key={purchase.date}>
+              <div
+                className={cn(
+                  'flex flex-col gap-1',
+                  isPlanPaused && 'pointer-events-none blur-xs select-none'
+                )}
+                key={purchase.date}
+              >
                 <div className="flex items-center justify-between">
                   <div>{purchase.date}</div>
                   <div>${purchase.amount}</div>
@@ -722,27 +777,37 @@ export default function HomePage() {
               </DrawerContent>
             </Drawer>
 
-            <Drawer>
+            <Drawer open={isPauseOpen} onOpenChange={setIsPauseOpen}>
               <DrawerTrigger asChild>
                 <Button
                   color="danger"
                   variant="bordered"
                   className="w-full border-[#FF4038]/10 bg-[#FF4038]/10 font-medium"
+                  isLoading={pausing}
                 >
-                  Cancel Plan
+                  {isPlanPaused ? 'Unpause Plan' : 'Pause Plan'}
                 </Button>
               </DrawerTrigger>
 
               <DrawerContent className="border-[#FF4038]">
                 <DrawerHeader className="px-5 pt-6 pb-0">
-                  <DrawerTitle className="text-xl">Cancel Plan</DrawerTitle>
+                  <DrawerTitle className="text-xl">
+                    {isPlanPaused ? 'Unpause Plan' : 'Pause Plan'}
+                  </DrawerTitle>
+
+                  <div className="text-foreground/50 my-2 flex w-full flex-col items-center gap-2 text-base">
+                    Are you sure you want to{' '}
+                    {isPlanPaused ? 'unpause' : 'pause'} your plan?
+                  </div>
 
                   <Button
                     color="danger"
                     size="lg"
                     className="mt-6 mb-10 border-2 border-[#FF4038] bg-gradient-to-r from-[#FF4038] to-[#B7241E] font-medium"
+                    isLoading={pausing}
+                    onPress={() => handlePausePlan(isPlanPaused)}
                   >
-                    COMING SOON
+                    {isPlanPaused ? 'Unpause Plan' : 'Pause Plan'}
                   </Button>
                 </DrawerHeader>
 
